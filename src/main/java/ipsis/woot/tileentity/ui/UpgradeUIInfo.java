@@ -2,7 +2,7 @@ package ipsis.woot.tileentity.ui;
 
 import ipsis.woot.util.EnumFarmUpgrade;
 import ipsis.woot.util.StringHelper;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
 
 public class UpgradeUIInfo {
 
@@ -43,7 +43,7 @@ public class UpgradeUIInfo {
 
     public void setUpgrade(EnumFarmUpgrade upgrade, int level) {
 
-        level = MathHelper.clamp(level, 1, 3);
+        level = MathHelper.clamp_int(level, 1, 3);
         upgradeEnabled[upgrade.ordinal()] = true;
         upgradeLevel[upgrade.ordinal()] = level;
     }

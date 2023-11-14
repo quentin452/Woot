@@ -1,5 +1,7 @@
 package ipsis.woot.block;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import ipsis.woot.init.ModBlocks;
 import ipsis.woot.oss.client.ModelHelper;
 import ipsis.woot.tileentity.TileEntityLayout;
@@ -7,19 +9,15 @@ import ipsis.woot.multiblock.EnumMobFactoryTier;
 import ipsis.woot.util.StringHelper;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -29,7 +27,7 @@ public class BlockLayout extends BlockWoot implements ITileEntityProvider, ITool
 
     public BlockLayout() {
 
-        super(Material.ROCK, BASENAME);
+        super(Material.rock, BASENAME);
     }
 
     @Override
@@ -46,48 +44,62 @@ public class BlockLayout extends BlockWoot implements ITileEntityProvider, ITool
     }
 
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+    public void onBlockPlacedBy(World worldIn, int x, int y, int z, EntityLivingBase placer, ItemStack itemIn) {
+        TileEntity te = worldIn.getTileEntity(x, y, z);
+        if(te != null && te instanceof TileEntityLayout) {
+            int facing = MathHelper.floor_double((placer.rotationYaw * 4F) / 360F + 0.5D) & 3;
+            EnumFacing f;
+            switch(facing) {
+                case 0: f = EnumFacing.EAST; break;
+                case 1: f = EnumFacing.WEST; break;
+                case 2: f = EnumFacing.NORTH; break;
+                default: f = EnumFacing.SOUTH;
+            }
 
-        TileEntity te = worldIn.getTileEntity(pos);
-        if (te != null && te instanceof TileEntityLayout) {
-            EnumFacing f = placer.getHorizontalFacing().getOpposite();
-            ((TileEntityLayout) te).setFacing(f);
+            EnumFacing oppositeFacing;
+            switch (f) {
+                case EAST: oppositeFacing = EnumFacing.WEST; break;
+                case WEST: oppositeFacing = EnumFacing.EAST; break;
+                case NORTH: oppositeFacing = EnumFacing.SOUTH; break;
+                case SOUTH: oppositeFacing = EnumFacing.NORTH; break;
+                default: oppositeFacing = EnumFacing.NORTH;
+            }
+
+            ((TileEntityLayout) te).setFacing(oppositeFacing);
             ((TileEntityLayout) te).refreshLayout();
         }
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-
+    public boolean onBlockActivated(World worldIn, int x, int y, int z, EntityPlayer player, int side, float subX, float subY, float subZ) {
         /**
-         * Activate with redstone in creative - builds the factory
-         * Activate step through different tiers
-         * Activate while sneaking change y-level all->1->2->....->all
+         * Activer avec de la redstone en mode créatif - construit l'usine
+         * Activer pour passer à travers les différentes catégories
+         * Activer tout en se faufilant pour changer le niveau de y: tout -> 1 -> 2 -> .... -> tout
          */
-
         if (!worldIn.isRemote) {
-            TileEntity te = worldIn.getTileEntity(pos);
+            TileEntity te = worldIn.getTileEntity(x, y, z);
             if (te != null && te instanceof TileEntityLayout) {
-                if (playerIn.isCreative() && !playerIn.getHeldItem(hand).isEmpty() && playerIn.getHeldItem(hand).getItem() == Items.REDSTONE) {
+                ItemStack heldItem = player.getHeldItem();
+                if (player.capabilities.isCreativeMode && heldItem != null && heldItem.getItem() == Items.redstone) {
                     ((TileEntityLayout) te).buildFactory();
-                } else if (playerIn.isSneaking()) {
+                } else if (player.isSneaking()) {
                     ((TileEntityLayout) te).setNextLevel();
-                    worldIn.notifyBlockUpdate(pos, state, state, 4);
+                    worldIn.markBlockForUpdate(x, y, z);
                 } else {
                     ((TileEntityLayout) te).setNextTier();
                     EnumMobFactoryTier tier = ((TileEntityLayout) te).getTier();
-                    playerIn.sendStatusMessage(new TextComponentString(tier.getTranslated("info.woot.tier")), false);
-                    worldIn.notifyBlockUpdate(pos, state, state, 4);
+                    player.addChatMessage(new ChatComponentText(tier.getTranslated("info.woot.tier")));
+                    worldIn.markBlockForUpdate(x, y, z);
                 }
             }
         }
-
         return true;
     }
 
-    @Override
-    public boolean isOpaqueCube(IBlockState state) {
 
+    @Override
+    public boolean isOpaqueCube(){
         /* This stops the TESR rendering really dark! */
         return false;
     }

@@ -9,14 +9,15 @@ import ipsis.woot.multiblock.MobFactoryModule;
 import ipsis.woot.tileentity.TileEntityMobFactoryCell;
 import ipsis.woot.tileentity.TileEntityMobFactoryExporter;
 import ipsis.woot.tileentity.TileEntityMobFactoryImporter;
-import ipsis.woot.util.BlockPosHelper;
+import ipsis.woot.util.ChunkCoordinatesHelper;
 import ipsis.woot.util.EnumFarmUpgrade;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -24,7 +25,7 @@ import java.util.Set;
 
 public class FarmScanner2 {
 
-    private BadFarmBlockInfo createBadFarmBlockInfo(MobFactoryModule m, BadBlockReason r, BlockPos p, Block badBlock, int badBlockMeta) {
+    private BadFarmBlockInfo createBadFarmBlockInfo(MobFactoryModule m, BadBlockReason r, ChunkCoordinates p, Block badBlock, int badBlockMeta) {
 
         BadFarmBlockInfo i = new BadFarmBlockInfo(r, p);
 
@@ -34,7 +35,7 @@ public class FarmScanner2 {
         return i;
     }
 
-    private boolean scanTier(World world, BlockPos origin, EnumFacing facing, EnumMobFactoryTier tier, Set<BadFarmBlockInfo> badList, Set<BlockPos> goodList) {
+    private boolean scanTier(World world, ChunkCoordinates origin, EnumFacing facing, EnumMobFactoryTier tier, Set<BadFarmBlockInfo> badList, Set<ChunkCoordinates> goodList) {
 
         badList.clear();
         goodList.clear();
@@ -42,7 +43,7 @@ public class FarmScanner2 {
         boolean valid = true;
         for (MobFactoryModule m : Woot.factoryPatternRepository.getAllModules(tier)) {
 
-            BlockPos p = new BlockPos(origin).add(BlockPosHelper.rotateFromSouth(m.getOffset(), facing.getOpposite()));
+            ChunkCoordinates p = new ChunkCoordinates(origin).add(ChunkCoordinatesHelper.rotateFromSouth(m.getOffset(), facing.getOpposite()));
 
             if (!world.isBlockLoaded(p)) {
                 // Stop from loading the chunk to check the block
@@ -76,9 +77,9 @@ public class FarmScanner2 {
         return valid;
     }
 
-    private @Nullable BlockPos findController(World world, BlockPos origin, EnumFacing facing) {
+    private @Nullable ChunkCoordinates findController(World world, ChunkCoordinates origin, EnumFacing facing) {
 
-        BlockPos p = getControllerPos(world, origin, facing);
+        ChunkCoordinates p = getControllerPos(world, origin, facing);
         TileEntity te = world.getTileEntity(p);
         if (te instanceof IFarmBlockController)
             return p;
@@ -86,17 +87,17 @@ public class FarmScanner2 {
         return null;
     }
 
-    public BlockPos getControllerPos(World world, BlockPos origin, EnumFacing facing) {
+    public ChunkCoordinates getControllerPos(World world, ChunkCoordinates origin, EnumFacing facing) {
 
-        return new BlockPos(origin).up(1).offset(facing, -1);
+        return new ChunkCoordinates(origin).up(1).offset(facing, -1);
     }
 
-    private @Nullable TileEntityMobFactoryCell findCell(World world, BlockPos origin) {
+    private @Nullable TileEntityMobFactoryCell findCell(World world, ChunkCoordinates origin) {
 
         int Y_OFFSET = 10;
         for (int offset = 1; offset <= Y_OFFSET; offset++) {
 
-            BlockPos p = new BlockPos(origin).down(offset);
+            ChunkCoordinates p = new ChunkCoordinates(origin).down(offset);
             TileEntity te = world.getTileEntity(p);
 
             // First thing found MUST be the cell
@@ -110,9 +111,9 @@ public class FarmScanner2 {
         return null;
     }
 
-    private void scanController(World world, BlockPos origin, EnumFacing facing, ScannedFarmController controller) {
+    private void scanController(World world, ChunkCoordinates origin, EnumFacing facing, ScannedFarmController controller) {
 
-        BlockPos p = findController(world, origin, facing);
+        ChunkCoordinates p = findController(world, origin, facing);
         if (p != null) {
             IFarmBlockController iFarmBlockController = (IFarmBlockController)(world.getTileEntity(p));
             controller.setBlocks(p);
@@ -120,17 +121,17 @@ public class FarmScanner2 {
         }
     }
 
-    private void scanRemote(World world, BlockPos origin, EnumFacing facing, ScannedFarmRemote remote) {
+    private void scanRemote(World world, ChunkCoordinates origin, EnumFacing facing, ScannedFarmRemote remote) {
 
         TileEntityMobFactoryCell cell = findCell(world, origin);
         if (cell != null) {
 
             boolean power = cell.getPowerStation() != null;
             if (power)
-                remote.setPowerPos(new BlockPos(cell.getPos()));
+                remote.setPowerPos(new ChunkCoordinates(cell.getPos()));
 
-            BlockPos inPos = new BlockPos(cell.getPos()).down(1);
-            BlockPos outPos = new BlockPos(cell.getPos()).down(2);
+            ChunkCoordinates inPos = new ChunkCoordinates(cell.getPos()).down(1);
+            ChunkCoordinates outPos = new ChunkCoordinates(cell.getPos()).down(2);
             TileEntity inTe = world.getTileEntity(inPos);
             TileEntity outTe = world.getTileEntity(outPos);
 
@@ -142,33 +143,33 @@ public class FarmScanner2 {
         }
     }
 
-    private void scanUpgrades(World world, BlockPos origin, EnumFacing facing, EnumMobFactoryTier tier, ScannedFarmUpgrade upgrades) {
+    private void scanUpgrades(World world, ChunkCoordinates origin, EnumFacing facing, EnumMobFactoryTier tier, ScannedFarmUpgrade upgrades) {
 
-        BlockPos[] positions;
+        ChunkCoordinates[] positions;
         Class upgradeClass;
 
         if (tier == EnumMobFactoryTier.TIER_ONE) {
-            positions = new BlockPos[]{
-                    new BlockPos(1, 1, 1), new BlockPos(-1, 1, 1)
+            positions = new ChunkCoordinates[]{
+                    new ChunkCoordinates(1, 1, 1), new ChunkCoordinates(-1, 1, 1)
             };
             upgradeClass = UpgradeTotemTierOne.class;
         } else if (tier == EnumMobFactoryTier.TIER_TWO) {
-            positions = new BlockPos[]{
-                    new BlockPos(1, 1, 1), new BlockPos(-1, 1, 1),
-                    new BlockPos(2, 1, 1), new BlockPos(-2, 1, 1)};
+            positions = new ChunkCoordinates[]{
+                    new ChunkCoordinates(1, 1, 1), new ChunkCoordinates(-1, 1, 1),
+                    new ChunkCoordinates(2, 1, 1), new ChunkCoordinates(-2, 1, 1)};
             upgradeClass = UpgradeTotemTierTwo.class;
         } else {
-            positions = new BlockPos[]{
-                    new BlockPos(1, 1, 1), new BlockPos(-1, 1, 1),
-                    new BlockPos(2, 1, 1), new BlockPos(-2, 1, 1),
-                    new BlockPos(3, 1, 1), new BlockPos(-3, 1, 1)};
+            positions = new ChunkCoordinates[]{
+                    new ChunkCoordinates(1, 1, 1), new ChunkCoordinates(-1, 1, 1),
+                    new ChunkCoordinates(2, 1, 1), new ChunkCoordinates(-2, 1, 1),
+                    new ChunkCoordinates(3, 1, 1), new ChunkCoordinates(-3, 1, 1)};
             upgradeClass = UpgradeTotemTierThree.class;
         }
 
 
-        for (BlockPos p : positions) {
-            BlockPos offset = BlockPosHelper.rotateFromSouth(p, facing.getOpposite());
-            BlockPos p2 = origin.add(offset.getX(), offset.getY(), offset.getZ());
+        for (ChunkCoordinates p : positions) {
+            ChunkCoordinates offset = ChunkCoordinatesHelper.rotateFromSouth(p, facing.getOpposite());
+            ChunkCoordinates p2 = origin.add(offset.getX(), offset.getY(), offset.getZ());
 
             AbstractUpgradeTotem upgradeTotem = AbstractUpgradeTotemBuilder.build(upgradeClass, world, p2);
             if (upgradeTotem != null) {
@@ -178,7 +179,7 @@ public class FarmScanner2 {
 
                     ScannedFarmUpgrade.Upgrade upgrade = new ScannedFarmUpgrade.Upgrade();
                     upgrade.upgradeTier = upgradeTotem.spawnerUpgradeLevel;
-                    upgrade.blocks.addAll(upgradeTotem.blockPosList);
+                    upgrade.blocks.addAll(upgradeTotem.ChunkCoordinatesList);
                     upgrade.upgrade = EnumFarmUpgrade.getFromEnumSpawnerUpgrade(upgradeTotem.spawnerUpgrade);
                     upgrades.addUpgrade(upgrade);
                 }
@@ -186,7 +187,7 @@ public class FarmScanner2 {
         }
     }
 
-    public ScannedFarm2 scanFarm(World world, BlockPos origin, EnumFacing facing, EnumMobFactoryTier tier) {
+    public ScannedFarm2 scanFarm(World world, ChunkCoordinates origin, EnumFacing facing, EnumMobFactoryTier tier) {
 
         ScannedFarm2 farm = new ScannedFarm2();
         if (scanTier(world, origin, facing, tier, farm.badBlocks, farm.base.getBlocks())) {
@@ -199,7 +200,7 @@ public class FarmScanner2 {
         return farm;
     }
 
-    public ScannedFarm2 scanFarm(World world, BlockPos origin, EnumFacing facing) {
+    public ScannedFarm2 scanFarm(World world, ChunkCoordinates origin, EnumFacing facing) {
 
         ScannedFarm2 farm = new ScannedFarm2();
         for (int i = EnumMobFactoryTier.values().length - 1; i >= 0; i--) {
@@ -222,20 +223,20 @@ public class FarmScanner2 {
 
     public class BadFarmBlockInfo {
 
-        private BlockPos pos;
+        private ChunkCoordinates pos;
         private BadBlockReason reason;
         private Block correctBlock;
         private int correctBlockMeta;
         private Block invalidBlock;
         private int invalidBlockMeta;
 
-        public BadFarmBlockInfo(BadBlockReason reason, BlockPos pos) {
+        public BadFarmBlockInfo(BadBlockReason reason, ChunkCoordinates pos) {
             this.reason = reason;
-            this.pos = new BlockPos(pos);
+            this.pos = new ChunkCoordinates(pos);
         }
 
         public BadBlockReason getReason() { return reason; }
-        public BlockPos getPos() { return pos; }
+        public ChunkCoordinates getPos() { return pos; }
         public void setBlockInfo(Block correctBlock, int correctBlockMeta, Block invalidBlock, int invalidBlockMeta) {
             this.correctBlock = correctBlock;
             this.correctBlockMeta = correctBlockMeta;

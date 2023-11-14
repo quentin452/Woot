@@ -1,8 +1,6 @@
 package ipsis.woot.block;
 
-import net.minecraft.util.IStringSerializable;
-
-public enum EnumVariantUpgrade implements IStringSerializable {
+public enum EnumVariantUpgrade {
 
     RATE_I,
     RATE_II,
@@ -33,7 +31,6 @@ public enum EnumVariantUpgrade implements IStringSerializable {
         return values()[meta];
     }
 
-    @Override
     public String getName() {
 
         return toString();

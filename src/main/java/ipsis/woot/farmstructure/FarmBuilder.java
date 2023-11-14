@@ -10,12 +10,13 @@ import ipsis.woot.util.EnumFarmUpgrade;
 import ipsis.woot.farming.ITickTracker;
 import ipsis.woot.farmblocks.IFarmBlockMaster;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,7 +25,7 @@ public class FarmBuilder implements IFarmStructure {
     private boolean farmDirty = false;
     private boolean proxyDirty = false;
     private World world;
-    private BlockPos origin;
+    private ChunkCoordinates origin;
 
     private boolean changed = false;
     private ScannedFarm2 currFarm;
@@ -38,22 +39,22 @@ public class FarmBuilder implements IFarmStructure {
         if (oldFarm == null)
             return;
 
-        Set<BlockPos> oldBlocks = new HashSet<>();
-        oldBlocks.addAll(oldFarm.base.getBlocks());
+        Set<ChunkCoordinates> oldBlocks = new HashSet<>();
+        oldBlocks.addAll((Collection<? extends ChunkCoordinates>) oldFarm.base.getBlocks());
         oldBlocks.add(oldFarm.controller.getBlocks());
-        oldBlocks.addAll(oldFarm.upgrades.getBlocks());
-        oldBlocks.addAll(oldFarm.remote.getBlocks());
+        oldBlocks.addAll((Collection<? extends ChunkCoordinates>) oldFarm.upgrades.getBlocks());
+        oldBlocks.addAll((Collection<? extends ChunkCoordinates>) oldFarm.remote.getBlocks());
 
-        Set<BlockPos> newBlocks = new HashSet<>();
+        Set<ChunkCoordinates> newBlocks = new HashSet<>();
         if (newFarm != null) {
-            newBlocks.addAll(newFarm.base.getBlocks());
+            newBlocks.addAll((Collection<? extends ChunkCoordinates>) newFarm.base.getBlocks());
             newBlocks.add(newFarm.controller.getBlocks());
-            newBlocks.addAll(newFarm.upgrades.getBlocks());
-            newBlocks.addAll(newFarm.remote.getBlocks());
+            newBlocks.addAll((Collection<? extends ChunkCoordinates>) newFarm.upgrades.getBlocks());
+            newBlocks.addAll((Collection<? extends ChunkCoordinates>) newFarm.remote.getBlocks());
         }
 
         oldBlocks.removeAll(newBlocks);
-        for (BlockPos pos : oldBlocks) {
+        for (ChunkCoordinates pos : oldBlocks) {
             if (world.isBlockLoaded(pos)) {
                 TileEntity te = world.getTileEntity(pos);
                 if (te instanceof IFactoryGlueProvider) {
@@ -67,23 +68,23 @@ public class FarmBuilder implements IFarmStructure {
     private void connectNewFarm(ScannedFarm2 oldFarm, ScannedFarm2 newFarm) {
 
         IFarmBlockMaster master = (IFarmBlockMaster)world.getTileEntity(origin);
-        Set<BlockPos> oldBlocks = new HashSet<>();
+        Set<ChunkCoordinates> oldBlocks = new HashSet<>();
 
         if (oldFarm != null) {
-            oldBlocks.addAll(oldFarm.base.getBlocks());
+            oldBlocks.addAll((Collection<? extends ChunkCoordinates>) oldFarm.base.getBlocks());
             oldBlocks.add(oldFarm.controller.getBlocks());
-            oldBlocks.addAll(oldFarm.upgrades.getBlocks());
-            oldBlocks.addAll(oldFarm.remote.getBlocks());
+            oldBlocks.addAll((Collection<? extends ChunkCoordinates>) oldFarm.upgrades.getBlocks());
+            oldBlocks.addAll((Collection<? extends ChunkCoordinates>) oldFarm.remote.getBlocks());
         }
 
-        Set<BlockPos> newBlocks = new HashSet<>();
-        newBlocks.addAll(newFarm.base.getBlocks());
+        Set<ChunkCoordinates> newBlocks = new HashSet<>();
+        newBlocks.addAll((Collection<? extends ChunkCoordinates>) newFarm.base.getBlocks());
         newBlocks.add(newFarm.controller.getBlocks());
-        newBlocks.addAll(newFarm.upgrades.getBlocks());
-        newBlocks.addAll(newFarm.remote.getBlocks());
+        newBlocks.addAll((Collection<? extends ChunkCoordinates>) newFarm.upgrades.getBlocks());
+        newBlocks.addAll((Collection<? extends ChunkCoordinates>) newFarm.remote.getBlocks());
 
         newBlocks.removeAll(oldBlocks);
-        for (BlockPos pos : newBlocks) {
+        for (ChunkCoordinates pos : newBlocks) {
             if (world.isBlockLoaded(pos)) {
                 TileEntity te = world.getTileEntity(pos);
                 if (te instanceof  IFactoryGlueProvider && ((IFactoryGlueProvider) te).getIFactoryGlue().getType() == IFactoryGlue.FactoryBlockType.UPGRADE)
@@ -98,7 +99,7 @@ public class FarmBuilder implements IFarmStructure {
 
     private @Nullable ScannedFarm2 scanFarm() {
 
-        EnumFacing facing = world.getBlockState(origin).getValue(BlockMobFactoryHeart.FACING);
+        EnumFacing facing = world.getBlock(origin).getValue(BlockMobFactoryHeart.FACING);
         FarmScanner2 farmScanner = new FarmScanner2();
         ScannedFarm2 scannedFarm = farmScanner.scanFarm(world, origin, facing);
 
@@ -168,7 +169,7 @@ public class FarmBuilder implements IFarmStructure {
     }
 
     @Override
-    public IFarmStructure setPosition(BlockPos origin) {
+    public IFarmStructure setPosition(ChunkCoordinates origin) {
 
         this.origin = origin;
         return this;
@@ -209,11 +210,11 @@ public class FarmBuilder implements IFarmStructure {
         else if (level == 3)
             farmSetup.setEnchantKey(EnumEnchantKey.LOOTING_III);
 
-        farmSetup.setFacing(world.getBlockState(origin).getValue(BlockMobFactoryHeart.FACING));
+        farmSetup.setFacing(world.getBlock(origin).getValue(BlockMobFactoryHeart.FACING));
 
-        farmSetup.setPowerCellBlockPos(currFarm.remote.getPowerPos());
-        farmSetup.setExportBlockPos(currFarm.remote.getExportPos());
-        farmSetup.setImportBlockPos(currFarm.remote.getImportPos());
+        farmSetup.setPowerCellChunkCoordinates(currFarm.remote.getPowerPos());
+        farmSetup.setExportChunkCoordinates(currFarm.remote.getExportPos());
+        farmSetup.setImportChunkCoordinates(currFarm.remote.getImportPos());
 
         return farmSetup;
     }
@@ -242,13 +243,13 @@ public class FarmBuilder implements IFarmStructure {
         if (currFarm == null)
             return;
 
-        Set<BlockPos> oldBlocks = new HashSet<>();
+        Set<ChunkCoordinates> oldBlocks = new HashSet<>();
         oldBlocks.addAll(currFarm.base.getBlocks());
         oldBlocks.add(currFarm.controller.getBlocks());
         oldBlocks.addAll(currFarm.upgrades.getBlocks());
         oldBlocks.addAll(currFarm.remote.getBlocks());
 
-        for (BlockPos pos : oldBlocks) {
+        for (ChunkCoordinates pos : oldBlocks) {
             if (world.isBlockLoaded(pos)) {
                 TileEntity te = world.getTileEntity(pos);
                 if (te instanceof IFactoryGlueProvider) {

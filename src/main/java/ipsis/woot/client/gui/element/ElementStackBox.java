@@ -2,9 +2,9 @@ package ipsis.woot.client.gui.element;
 
 import ipsis.woot.client.gui.GuiContainerWoot;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -70,55 +70,46 @@ public class ElementStackBox extends ElementBase {
 
     @Override
     public void drawBackground(int mouseX, int mouseY) {
-
         super.drawBackground(mouseX, mouseY);
 
         for (int n = 0; n < stacks.size(); n++) {
-
             DisplayStack stack = stacks.get(n);
+
             if (stack instanceof DisplayItemStack) {
-                DisplayItemStack displayStack = (DisplayItemStack)stack;
+                DisplayItemStack displayStack = (DisplayItemStack) stack;
 
                 int x = gui.getGuiLeft() + displayStack.x;
                 int y = gui.getGuiTop() + displayStack.y;
-                WidgetItemStack.draw(gui,
-                        displayStack.itemStack, x, y, null);
+                WidgetItemStack.draw(gui, displayStack.itemStack, x, y, null);
 
                 if (showFlag) {
                     String s = "?";
-                    GlStateManager.disableLighting();
-                    GlStateManager.disableDepth();
-                    GlStateManager.disableBlend();
-                    fontRenderer.drawStringWithShadow(s, (float) (x + 19 - 2 - fontRenderer.getStringWidth(s)), (float) (y + 6 + 3 + 8), Color.RED.getRGB());
-                    GlStateManager.enableLighting();
-                    GlStateManager.enableDepth();
-                    // Fixes opaque cooldown overlay a bit lower
-                    // TODO: check if enabled blending still screws things up down the line.
-                    GlStateManager.enableBlend();
+                    GL11.glDisable(GL11.GL_LIGHTING);
+                    GL11.glDisable(GL11.GL_DEPTH_TEST);
+                    GL11.glDisable(GL11.GL_BLEND);
+                    fontRenderer.drawStringWithShadow(s, (x + 19 - 2 - fontRenderer.getStringWidth(s)), (y + 6 + 3 + 8), Color.RED.getRGB());
+                    GL11.glEnable(GL11.GL_LIGHTING);
+                    GL11.glEnable(GL11.GL_DEPTH_TEST);
+                    GL11.glEnable(GL11.GL_BLEND);
                 }
-
             } else if (stack instanceof DisplayFluidStack) {
-                DisplayFluidStack displayStack = (DisplayFluidStack)stack;
+                DisplayFluidStack displayStack = (DisplayFluidStack) stack;
 
                 int x = gui.getGuiLeft() + displayStack.x;
                 int y = gui.getGuiTop() + displayStack.y;
-                WidgetFluidStack.draw(gui,
-                        displayStack.fluidStack, x, y);
+                WidgetFluidStack.draw(gui, displayStack.fluidStack, x, y);
 
                 if (showFlag) {
                     String s = "?";
-                    GlStateManager.disableLighting();
-                    GlStateManager.disableDepth();
-                    GlStateManager.disableBlend();
-                    fontRenderer.drawStringWithShadow(s, (float) (x + 19 - 2 - fontRenderer.getStringWidth(s)), (float) (y + 6 + 3 + 8), Color.RED.getRGB());
-                    GlStateManager.enableLighting();
-                    GlStateManager.enableDepth();
-                    // Fixes opaque cooldown overlay a bit lower
-                    // TODO: check if enabled blending still screws things up down the line.
-                    GlStateManager.enableBlend();
+                    GL11.glDisable(GL11.GL_LIGHTING);
+                    GL11.glDisable(GL11.GL_DEPTH_TEST);
+                    GL11.glDisable(GL11.GL_BLEND);
+                    fontRenderer.drawStringWithShadow(s, (x + 19 - 2 - fontRenderer.getStringWidth(s)), (y + 6 + 3 + 8), Color.RED.getRGB());
+                    GL11.glEnable(GL11.GL_LIGHTING);
+                    GL11.glEnable(GL11.GL_DEPTH_TEST);
+                    GL11.glEnable(GL11.GL_BLEND);
                 }
             }
-
         }
     }
 

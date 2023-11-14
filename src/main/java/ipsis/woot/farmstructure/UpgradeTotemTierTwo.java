@@ -2,7 +2,7 @@ package ipsis.woot.farmstructure;
 
 import ipsis.woot.util.EnumFarmUpgrade;
 import ipsis.woot.util.EnumSpawnerUpgrade;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.World;
 
 public class UpgradeTotemTierTwo extends AbstractUpgradeTotem {
@@ -22,7 +22,7 @@ public class UpgradeTotemTierTwo extends AbstractUpgradeTotem {
 
         spawnerUpgrade = baseUpgrade;
         spawnerUpgradeLevel = 1;
-        blockPosList.add(new BlockPos(origin));
+        ChunkCoordinatesList.add(new ChunkCoordinates(origin));
 
         // Tier 2
         EnumSpawnerUpgrade t2 = TotemHelper.getUpgrade(world, origin, 2);
@@ -32,10 +32,10 @@ public class UpgradeTotemTierTwo extends AbstractUpgradeTotem {
             return;
 
         spawnerUpgradeLevel = 2;
-        blockPosList.add(new BlockPos(origin).up(1));
+        ChunkCoordinatesList.add(new ChunkCoordinates(origin).up(1));
     }
 
-    public UpgradeTotemTierTwo(World world, BlockPos pos) {
+    public UpgradeTotemTierTwo(World world, ChunkCoordinates pos) {
         super(world, pos);
     }
 }

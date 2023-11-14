@@ -7,7 +7,7 @@ import ipsis.woot.reference.Reference;
 import ipsis.woot.tileentity.TileEntityMobFactoryHeart;
 import ipsis.woot.util.DebugSetup;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.World;
 
 import java.util.function.Consumer;
@@ -27,20 +27,20 @@ public class RitualLifeEssenceAltar extends Ritual {
     private static final String ALTAR_RANGE = "altar";
     private static final String HEART_RANGE = "heart";
 
-    private BlockPos altarOffsetPos = new BlockPos(0, 0, 0);
-    private BlockPos heartOffsetPos = new BlockPos(0, 0, 0);
+    private ChunkCoordinates altarOffsetPos = new ChunkCoordinates(0, 0, 0);
+    private ChunkCoordinates heartOffsetPos = new ChunkCoordinates(0, 0, 0);
 
 
-    private TileAltar findAltar(World world, BlockPos pos) {
+    private TileAltar findAltar(World world, ChunkCoordinates pos) {
 
-        BlockPos altarPos = pos.add(altarOffsetPos);
+        ChunkCoordinates altarPos = pos.add(altarOffsetPos);
         TileEntity tile = world.getTileEntity(altarPos);
 
         AreaDescriptor altarRange = getBlockRange(ALTAR_RANGE);
 
         if (!altarRange.isWithinArea(altarOffsetPos) || !(tile instanceof TileAltar)) {
 
-            for (BlockPos newPos : altarRange.getContainedPositions(pos)) {
+            for (ChunkCoordinates newPos : altarRange.getContainedPositions(pos)) {
                 TileEntity nextTile = world.getTileEntity(newPos);
                 if (nextTile instanceof TileAltar) {
                     tile = nextTile;
@@ -63,16 +63,16 @@ public class RitualLifeEssenceAltar extends Ritual {
         return heart.getRunning() == 1;
     }
 
-    private IBloodMagicHandler findHandler(World world, BlockPos pos) {
+    private IBloodMagicHandler findHandler(World world, ChunkCoordinates pos) {
 
-        BlockPos heartPos = pos.add(heartOffsetPos);
+        ChunkCoordinates heartPos = pos.add(heartOffsetPos);
         TileEntity te = world.getTileEntity(heartPos);
 
         AreaDescriptor heartRange = getBlockRange(HEART_RANGE);
 
         if (!heartRange.isWithinArea(heartOffsetPos) || !isValidFactory(te)) {
 
-            for (BlockPos newPos : heartRange.getContainedPositions(pos)) {
+            for (ChunkCoordinates newPos : heartRange.getContainedPositions(pos)) {
                 TileEntity nextTile = world.getTileEntity(newPos);
                 if (nextTile instanceof IBloodMagicHandler) {
                     te = nextTile;
@@ -88,8 +88,8 @@ public class RitualLifeEssenceAltar extends Ritual {
 
     public RitualLifeEssenceAltar() {
         super(RITUAL_NAME, CRYSTAL_LEVEL, ACTIVATION_COST, "ritual." + Reference.MOD_ID + "." + RITUAL_NAME);
-        addBlockRange(ALTAR_RANGE, new AreaDescriptor.Rectangle(new BlockPos(-5, -10, -5), 11, 21, 11));
-        addBlockRange(HEART_RANGE, new AreaDescriptor.Rectangle(new BlockPos(-10, -10, -10), 21));
+        addBlockRange(ALTAR_RANGE, new AreaDescriptor.Rectangle(new ChunkCoordinates(-5, -10, -5), 11, 21, 11));
+        addBlockRange(HEART_RANGE, new AreaDescriptor.Rectangle(new ChunkCoordinates(-10, -10, -10), 21));
 
         setMaximumVolumeAndDistanceOfRange(ALTAR_RANGE, 0, 10, 15);
         setMaximumVolumeAndDistanceOfRange(HEART_RANGE, 0, 15, 15);
@@ -107,8 +107,8 @@ public class RitualLifeEssenceAltar extends Ritual {
         int maxEffects = masterRitualStone.getOwnerNetwork().getCurrentEssence() / getRefreshCost();
         int totalEffects = 0;
 
-        TileAltar tileAltar = findAltar(world, masterRitualStone.getBlockPos());
-        IBloodMagicHandler bloodMagicHandler = findHandler(world, masterRitualStone.getBlockPos());
+        TileAltar tileAltar = findAltar(world, masterRitualStone.getChunkCoordinates());
+        IBloodMagicHandler bloodMagicHandler = findHandler(world, masterRitualStone.getChunkCoordinates());
 
         Woot.debugSetup.trace(DebugSetup.EnumDebugType.GEN_BM_LE, "performRitual - LifeEssenceAltar", tileAltar + "/" + bloodMagicHandler);
 

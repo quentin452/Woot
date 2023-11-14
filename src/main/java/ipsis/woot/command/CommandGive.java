@@ -12,7 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -91,7 +91,7 @@ public class CommandGive extends CommandBase {
     }
 
     @Override
-    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
+    public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable ChunkCoordinates pos) {
 
         if (args.length == 1)
             return getListOfStringsMatchingLastWord(args, server.getOnlinePlayerNames());

@@ -44,7 +44,13 @@ public class ElementBase {
 
     public void drawBackground(int mouseX, int mouseY) {
 
-        gui.drawSizedModalRect(gui.getGuiLeft() + baseX, gui.getGuiTop() + baseY, baseX + gui.getGuiLeft() + sizeX, baseY + gui.getGuiTop() + sizeY, Color.darkGray.getRGB());
+        try {
+            int guiLeft = gui.guiLeft;
+            int guiTop = gui.guiTop;
+            gui.drawSizedModalRect(guiLeft + baseX, guiTop + baseY, baseX + guiLeft + sizeX, baseY + guiTop + sizeY, Color.darkGray.getRGB());
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            e.printStackTrace();
+        }
     }
 
     public void drawForeground(int mouseX, int mouseY) {
@@ -52,5 +58,4 @@ public class ElementBase {
         if (header != null)
             WidgetText.draw(fontRenderer, header, baseX, baseY, Color.yellow.getRGB());
     }
-
 }

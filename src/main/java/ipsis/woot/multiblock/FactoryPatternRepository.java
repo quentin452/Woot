@@ -3,9 +3,9 @@ package ipsis.woot.multiblock;
 import ipsis.woot.oss.LogHelper;
 import ipsis.woot.tileentity.ILayoutBlockInfo;
 import ipsis.woot.tileentity.StructureLayoutBlockInfo;
-import ipsis.woot.util.BlockPosHelper;
+import ipsis.woot.util.ChunkCoordinatesHelper;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -94,7 +94,7 @@ public class FactoryPatternRepository {
                     } else if (EnumMobFactoryModule.isValidChar(c)) {
                         EnumMobFactoryModule m = EnumMobFactoryModule.byChar(c);
                         tierPattern.incBlockCount(m);
-                        tierPattern.addModules(new MobFactoryModule(tierPattern.calcBlockPos(layer, row, col), m));
+                        tierPattern.addModules(new MobFactoryModule(tierPattern.calcChunkCoordinates(layer, row, col), m));
                     } else {
                         LogHelper.info(String.format("FactoryPatternRepository.load: invalid character (%d,%d,%d) %c", layer, row, col, c));
                         return;
@@ -121,7 +121,7 @@ public class FactoryPatternRepository {
         return c == 'x';
     }
 
-    private @Nullable MobFactoryModule getMobFactoryModule(EnumMobFactoryTier tier, BlockPos offset) {
+    private @Nullable MobFactoryModule getMobFactoryModule(EnumMobFactoryTier tier, ChunkCoordinates offset) {
 
         if (!tiers.containsKey(tier))
             return null;
@@ -142,13 +142,13 @@ public class FactoryPatternRepository {
         return maxYOffset;
     }
 
-    public @Nullable EnumMobFactoryModule getModule(EnumMobFactoryTier tier, BlockPos offset) {
+    public @Nullable EnumMobFactoryModule getModule(EnumMobFactoryTier tier, ChunkCoordinates offset) {
 
         MobFactoryModule module = getMobFactoryModule(tier, offset);
         return module != null ? module.moduleType : null;
     }
 
-    public boolean isValid(EnumMobFactoryTier tier, EnumMobFactoryModule m, BlockPos offset) {
+    public boolean isValid(EnumMobFactoryTier tier, EnumMobFactoryModule m, ChunkCoordinates offset) {
 
         MobFactoryModule module = getMobFactoryModule(tier, offset);
         return module != null && module.moduleType == m;
@@ -159,14 +159,14 @@ public class FactoryPatternRepository {
         return tiers.containsKey(tier) ? tiers.get(tier).modules : Collections.emptyList();
     }
 
-    public void getFactoryLayout(EnumMobFactoryTier tier, BlockPos origin, EnumFacing facing, List<ILayoutBlockInfo> layoutBlockInfoList) {
+    public void getFactoryLayout(EnumMobFactoryTier tier, ChunkCoordinates origin, EnumFacing facing, List<ILayoutBlockInfo> layoutBlockInfoList) {
 
         if (!tiers.containsKey(tier))
             return;
 
         for (MobFactoryModule s : tiers.get(tier).getModules()) {
 
-            BlockPos p = BlockPosHelper.rotateFromSouth(s.getOffset(), facing.getOpposite());
+            ChunkCoordinates p = ChunkCoordinatesHelper.rotateFromSouth(s.getOffset(), facing.getOpposite());
             p = origin.add(p);
             layoutBlockInfoList.add(new StructureLayoutBlockInfo(p, s.moduleType));
         }
@@ -198,13 +198,13 @@ public class FactoryPatternRepository {
             this.originCol = col;
         }
 
-        public BlockPos calcBlockPos(int layer, int row, int col) {
+        public ChunkCoordinates calcChunkCoordinates(int layer, int row, int col) {
 
             int l = (originLayer - layer) * -1;
             int r = (originRow - row) * -1;
             int c = (originCol - col) * -1;
 
-            return new BlockPos(c, l, r);
+            return new ChunkCoordinates(c, l, r);
         }
 
         public void setWidth(int width) { this.width = width; }

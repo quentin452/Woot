@@ -1,39 +1,27 @@
 package ipsis.woot.block;
 
-import ipsis.woot.oss.client.ModelHelper;
-import ipsis.woot.init.ModBlocks;
-import ipsis.woot.plugins.top.ITOPInfoProvider;
-import ipsis.woot.plugins.top.TOPUIInfoConvertors;
-import ipsis.woot.tileentity.TileEntityMobFactoryController;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import ipsis.woot.farmblocks.IFarmBlockController;
-import ipsis.woot.tileentity.ui.ControllerUIInfo;
-import mcjty.theoneprobe.api.IProbeHitData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.ProbeMode;
+import ipsis.woot.init.ModBlocks;
+import ipsis.woot.oss.client.ModelHelper;
+import ipsis.woot.tileentity.TileEntityMobFactoryController;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class BlockMobFactoryController extends BlockWoot implements ITileEntityProvider, ITOPInfoProvider {
+public class BlockMobFactoryController extends BlockWoot implements ITileEntityProvider {
 
     public static final String BASENAME = "controller";
 
     public BlockMobFactoryController() {
-
-        super(Material.ROCK, BASENAME);
+        super(Material.rock, BASENAME);
     }
 
     @Override
@@ -44,68 +32,51 @@ public class BlockMobFactoryController extends BlockWoot implements ITileEntityP
     @SideOnly(Side.CLIENT)
     @Override
     public void initModel() {
-
         ModelHelper.registerBlock(ModBlocks.blockFactoryController, BASENAME);
     }
 
     @Override
-    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
-
-        TileEntity te = worldIn.getTileEntity(pos);
+    public void onBlockAdded(World worldIn, int x, int y, int z) {
+        TileEntity te = worldIn.getTileEntity(x, y, z);
         if (te instanceof TileEntityMobFactoryController)
             ((TileEntityMobFactoryController) te).onBlockAdded();
     }
 
-    /**
-     * NB:
-     *
-     * This is the update that TinkersConstruct does to allow the TE to be available when
-     * parsing drops.
-     * Something changed in vanilla, as from other code it looks like this is a new requirement
-     */
-
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-
-        TileEntity te = worldIn.getTileEntity(pos);
-        if (te instanceof IFarmBlockController && stack != null && stack.hasTagCompound())
-            ((IFarmBlockController) te).readControllerFromNBT(stack.getTagCompound());
+    public void onBlockPlacedBy(World worldIn, int x, int y, int z, EntityLivingBase placer, ItemStack itemIn) {
+        TileEntity te = worldIn.getTileEntity(x, y, z);
+        if (te instanceof IFarmBlockController && itemIn != null && itemIn.hasTagCompound())
+            ((IFarmBlockController) te).readControllerFromNBT(itemIn.getTagCompound());
     }
 
     @Override
-    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+    public void harvestBlock(World world, EntityPlayer player, int x, int y, int z, int meta) {
+        super.harvestBlock(world, player, x, y, z, meta);
+        world.setBlockToAir(x, y, z);
+    }
 
-        TileEntity te = world.getTileEntity(pos);
+    @Override
+    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
+        TileEntity te = world.getTileEntity(x, y, z);
+        ArrayList<ItemStack> drops = new ArrayList<>();
+
         if (te instanceof TileEntityMobFactoryController) {
-            TileEntityMobFactoryController controller = (TileEntityMobFactoryController)te;
+            TileEntityMobFactoryController controller = (TileEntityMobFactoryController) te;
             drops.add(controller.getDroppedItemStack());
         } else {
-            super.getDrops(drops, world, pos, state, fortune);
+            drops.addAll(super.getDrops(world, x, y, z, metadata, fortune));
         }
+
+        return drops;
     }
 
     @Override
-    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
-
-        // From TinkersConstruct to allow the TE exist while processing the getDrops
-        this.onBlockDestroyedByPlayer(world, pos, state);
-        if (willHarvest)
-            this.harvestBlock(world, player, pos, state, world.getTileEntity(pos), player.getHeldItemMainhand());
-
-        world.setBlockToAir(pos);
-        return false;
-    }
-
-    @Override
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
-
-        TileEntity te = world.getTileEntity(data.getPos());
-        if (te instanceof TileEntityMobFactoryController) {
-
-            ControllerUIInfo info = new ControllerUIInfo();
-            ((TileEntityMobFactoryController) te).getUIInfo(info);
-            if (info.isValid)
-                TOPUIInfoConvertors.controllerConvertor(info, mode, probeInfo, player, world, blockState, data);
+    public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) {
+        if (willHarvest) {
+            this.harvestBlock(world, player, x, y, z, world.getBlockMetadata(x, y, z));
         }
+
+        world.setBlockToAir(x, y, z);
+        return true;
     }
 }

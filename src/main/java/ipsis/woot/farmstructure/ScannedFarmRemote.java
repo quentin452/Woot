@@ -1,15 +1,15 @@
 package ipsis.woot.farmstructure;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ScannedFarmRemote {
 
-    private BlockPos powerPos;
-    private BlockPos exportPos;
-    private BlockPos importPos;
+    private ChunkCoordinates powerPos;
+    private ChunkCoordinates exportPos;
+    private ChunkCoordinates importPos;
 
     public static boolean isEqual(ScannedFarmRemote a, ScannedFarmRemote b) {
 
@@ -84,39 +84,39 @@ public class ScannedFarmRemote {
         return this.importPos != null;
     }
 
-    public void setPowerPos(BlockPos pos) {
+    public void setPowerPos(ChunkCoordinates pos) {
 
         this.powerPos = pos;
     }
 
-    public BlockPos getPowerPos() {
+    public ChunkCoordinates getPowerPos() {
 
         return this.powerPos;
     }
 
-    public void setExportPos(BlockPos pos) {
+    public void setExportPos(ChunkCoordinates pos) {
 
         this.exportPos = pos;
     }
 
-    public BlockPos getExportPos() {
+    public ChunkCoordinates getExportPos() {
 
         return this.exportPos;
     }
 
-    public void setImportPos(BlockPos pos) {
+    public void setImportPos(ChunkCoordinates pos) {
 
         this.importPos = pos;
     }
 
-    public BlockPos getImportPos() {
+    public ChunkCoordinates getImportPos() {
 
         return this.importPos;
     }
 
-    public List<BlockPos> getBlocks() {
+    public List<ChunkCoordinates> getBlocks() {
 
-        List<BlockPos> blocks = new ArrayList<>();
+        List<ChunkCoordinates> blocks = new ArrayList<>();
         if (powerPos != null)
             blocks.add(powerPos);
         if (exportPos != null)

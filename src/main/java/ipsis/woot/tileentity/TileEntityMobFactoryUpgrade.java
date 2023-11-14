@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
 
 public class TileEntityMobFactoryUpgrade extends TileEntity implements IFarmBlockUpgrade, IFactoryGlueProvider {
 
-    private IFactoryGlue iFactoryGlue;
+    private final IFactoryGlue iFactoryGlue;
 
     public TileEntityMobFactoryUpgrade() {
 

@@ -8,7 +8,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -19,7 +19,7 @@ import java.util.List;
 public class AnvilHelper {
 
     public static @Nonnull
-    List<EntityItem> getItems(World world, BlockPos pos) {
+    List<EntityItem> getItems(World world, ChunkCoordinates pos) {
 
         List<EntityItem> items = new ArrayList<>();
         List<EntityItem> entityItemList = world.getEntitiesWithinAABB(EntityItem.class,
@@ -37,7 +37,7 @@ public class AnvilHelper {
         return items;
     }
 
-    public static boolean isAnvilHot(@Nonnull World world, @Nonnull BlockPos pos) {
+    public static boolean isAnvilHot(@Nonnull World world, @Nonnull ChunkCoordinates pos) {
 
         IBlockState iBlockState = world.getBlockState(pos.down());
         Block b = iBlockState.getBlock();

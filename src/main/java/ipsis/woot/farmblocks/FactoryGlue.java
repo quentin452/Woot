@@ -5,7 +5,7 @@ import ipsis.woot.init.ModBlocks;
 import ipsis.woot.util.DebugSetup;
 import ipsis.woot.util.WorldHelper;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.World;
 
 public class FactoryGlue implements IFactoryGlue {
@@ -66,7 +66,7 @@ public class FactoryGlue implements IFactoryGlue {
     }
 
     @Override
-    public void onHello(World world, BlockPos pos) {
+    public void onHello(World world, ChunkCoordinates pos) {
 
         Woot.debugSetup.trace(DebugSetup.EnumDebugType.MULTIBLOCK, "FactoryGlue:", "onHello");
         IFarmBlockMaster tmpMaster = locater.findMaster(world, pos, provider);
@@ -88,7 +88,7 @@ public class FactoryGlue implements IFactoryGlue {
     }
 
     @Override
-    public BlockPos getPos() {
+    public ChunkCoordinates getPos() {
         return te.getPos();
     }
 }

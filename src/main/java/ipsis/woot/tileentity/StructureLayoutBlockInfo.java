@@ -1,33 +1,33 @@
 package ipsis.woot.tileentity;
 
 import ipsis.woot.multiblock.EnumMobFactoryModule;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 
 public class StructureLayoutBlockInfo implements ILayoutBlockInfo {
 
-    public BlockPos blockPos;
+    public ChunkCoordinates ChunkCoordinates;
     public EnumMobFactoryModule module;
 
-    public StructureLayoutBlockInfo(BlockPos blockPos, EnumMobFactoryModule module) {
+    public StructureLayoutBlockInfo(ChunkCoordinates ChunkCoordinates, EnumMobFactoryModule module) {
 
-        this.blockPos = blockPos;
+        this.ChunkCoordinates = ChunkCoordinates;
         this.module = module;
     }
 
     @Override
     public String toString() {
 
-        return this.blockPos + ":" + module;
+        return this.ChunkCoordinates + ":" + module;
     }
 
     @Override
-    public BlockPos getPos() {
-        return blockPos;
+    public ChunkCoordinates getPos() {
+        return ChunkCoordinates;
     }
 
     @Override
     public void offsetY(int offset) {
 
-        this.blockPos = blockPos.up(offset);
+        this.ChunkCoordinates = ChunkCoordinates.up(offset);
     }
 }

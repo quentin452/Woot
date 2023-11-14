@@ -9,7 +9,7 @@ import ipsis.woot.tileentity.TileEntityMobFactoryHeart;
 import ipsis.woot.util.DebugSetup;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -43,12 +43,12 @@ public class RitualClonedSoul extends Ritual {
     private double crystalBuffer = 0;
     private double willBuffer = 0;
 
-    private BlockPos heartOffsetPos = new BlockPos(0, 0, 0);
+    private ChunkCoordinates heartOffsetPos = new ChunkCoordinates(0, 0, 0);
 
     public RitualClonedSoul() {
         super(RITUAL_NAME, CRYSTAL_LEVEL, ACTIVATION_COST, "ritual." + Reference.MOD_ID + "." + RITUAL_NAME);
-        addBlockRange(CRYSTAL_RANGE, new AreaDescriptor.Rectangle(new BlockPos(-3, 2, -3), 7, 5, 7));
-        addBlockRange(HEART_RANGE, new AreaDescriptor.Rectangle(new BlockPos(-10, -10, -10), 21));
+        addBlockRange(CRYSTAL_RANGE, new AreaDescriptor.Rectangle(new ChunkCoordinates(-3, 2, -3), 7, 5, 7));
+        addBlockRange(HEART_RANGE, new AreaDescriptor.Rectangle(new ChunkCoordinates(-10, -10, -10), 21));
 
         setMaximumVolumeAndDistanceOfRange(CRYSTAL_RANGE, 250, 5, 7);
         setMaximumVolumeAndDistanceOfRange(HEART_RANGE, 0, 15, 15);
@@ -82,16 +82,16 @@ public class RitualClonedSoul extends Ritual {
         return heart.getRunning() == 1;
     }
 
-    private IBloodMagicHandler findHandler(World world, BlockPos pos) {
+    private IBloodMagicHandler findHandler(World world, ChunkCoordinates pos) {
 
-        BlockPos heartPos = pos.add(heartOffsetPos);
+        ChunkCoordinates heartPos = pos.add(heartOffsetPos);
         TileEntity te = world.getTileEntity(heartPos);
 
         AreaDescriptor heartRange = getBlockRange(HEART_RANGE);
 
         if (!heartRange.isWithinArea(heartOffsetPos) || !isValidFactory(te)) {
 
-            for (BlockPos newPos : heartRange.getContainedPositions(pos)) {
+            for (ChunkCoordinates newPos : heartRange.getContainedPositions(pos)) {
                 TileEntity nextTile = world.getTileEntity(newPos);
                 if (nextTile instanceof IBloodMagicHandler) {
                     te = nextTile;
@@ -113,7 +113,7 @@ public class RitualClonedSoul extends Ritual {
         if (!BloodMagicHelper.canPerformRitual(masterRitualStone, getRefreshCost()))
             return;
 
-        BlockPos pos = masterRitualStone.getBlockPos();
+        ChunkCoordinates pos = masterRitualStone.getChunkCoordinates();
         World world = masterRitualStone.getWorldObj();
         int maxEffects = 100;
         int totalEffects = 0;
@@ -121,7 +121,7 @@ public class RitualClonedSoul extends Ritual {
         /**
          * Find the factory
          */
-        IBloodMagicHandler bloodMagicHandler = findHandler(world, masterRitualStone.getBlockPos());
+        IBloodMagicHandler bloodMagicHandler = findHandler(world, masterRitualStone.getChunkCoordinates());
         Woot.debugSetup.trace(DebugSetup.EnumDebugType.GEN_BM_CRYSTAL, "performRitual - ClonedSoul", bloodMagicHandler);
 
         if (bloodMagicHandler != null && bloodMagicHandler.getCrystalNumMobs() > 0 && bloodMagicHandler.getWootMobName() != null && !BloodMagicAPI.INSTANCE.getBlacklist().getSacrifice().contains(bloodMagicHandler.getWootMobName().getResourceLocation())) {
@@ -134,7 +134,7 @@ public class RitualClonedSoul extends Ritual {
              */
             crystalRange.resetIterator();
             while (crystalRange.hasNext()) {
-                BlockPos nextPos = crystalRange.next().add(pos);
+                ChunkCoordinates nextPos = crystalRange.next().add(pos);
                 TileEntity te = world.getTileEntity(nextPos);
                 if (te instanceof TileDemonCrystal)
                     crystalList.add((TileDemonCrystal) te);

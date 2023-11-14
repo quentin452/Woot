@@ -1,5 +1,7 @@
 package ipsis.woot.item;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import ipsis.Woot;
 import ipsis.woot.block.BlockMobFactoryHeart;
 import ipsis.woot.block.BlockMobFactoryStructure;
@@ -12,22 +14,12 @@ import ipsis.woot.oss.ItemHelper;
 import ipsis.woot.oss.client.ModelHelper;
 import ipsis.woot.util.StringHelper;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -121,7 +113,7 @@ public class ItemBuilder extends ItemWoot {
     }
 
     @Override
-    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
+    public EnumActionResult onItemUse(EntityPlayer player, World worldIn, ChunkCoordinates pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
 
         EnumActionResult result = EnumActionResult.PASS;
 
@@ -185,11 +177,11 @@ public class ItemBuilder extends ItemWoot {
         return s.getModuleTypeFromState(iBlockState) == m;
     }
 
-    private boolean tryBuild(EntityPlayer player, World world, BlockPos pos, EnumFacing facing, EnumMobFactoryTier tier) {
+    private boolean tryBuild(EntityPlayer player, World world, ChunkCoordinates pos, EnumFacing facing, EnumMobFactoryTier tier) {
 
         for (MobFactoryModule m : Woot.factoryPatternRepository.getAllModules(tier)) {
 
-            BlockPos placePos = new BlockPos(pos).add(ipsis.woot.util.BlockPosHelper.rotateFromSouth(m.getOffset(), facing.getOpposite()));
+            ChunkCoordinates placePos = new ChunkCoordinates(pos).add(ipsis.woot.util.ChunkCoordinatesHelper.rotateFromSouth(m.getOffset(), facing.getOpposite()));
             IBlockState currState = world.getBlockState(placePos);
             Block currBlock = currState.getBlock();
 

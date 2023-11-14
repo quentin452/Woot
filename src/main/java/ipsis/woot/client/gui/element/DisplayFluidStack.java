@@ -22,10 +22,7 @@ public class DisplayFluidStack extends DisplayStack {
     @Override
     public boolean isHit(int mouseX, int mouseY) {
 
-        if (mouseX >= x && mouseX <= x + 20 && mouseY >= y && mouseY <= y + 20)
-            return true;
-
-        return false;
+        return mouseX >= x && mouseX <= x + 20 && mouseY >= y && mouseY <= y + 20;
     }
 
     @Nonnull

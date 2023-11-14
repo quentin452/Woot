@@ -1,68 +1,95 @@
 package ipsis.woot.block;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import ipsis.woot.init.ModBlocks;
 import ipsis.woot.multiblock.EnumMobFactoryTier;
 import ipsis.woot.oss.client.ModelHelper;
-import ipsis.woot.init.ModBlocks;
-import ipsis.woot.plugins.top.ITOPInfoProvider;
-import ipsis.woot.plugins.top.TOPUIInfoConvertors;
-import ipsis.woot.tileentity.IMobFarm;
 import ipsis.woot.tileentity.TileEntityMobFactoryHeart;
-import ipsis.woot.tileentity.ui.FarmUIInfo;
 import ipsis.woot.tools.IValidateTool;
 import ipsis.woot.tools.ValidateToolUtils;
-import mcjty.theoneprobe.api.IProbeHitData;
-import mcjty.theoneprobe.api.IProbeInfo;
-import mcjty.theoneprobe.api.ProbeMode;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.EnumFacing;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
-public class BlockMobFactoryHeart extends BlockWoot implements ITooltipInfo, ITileEntityProvider, ITOPInfoProvider {
+public class BlockMobFactoryHeart extends BlockWoot implements ITooltipInfo, ITileEntityProvider {
 
     public static final String BASENAME = "factory";
-    public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 
     public BlockMobFactoryHeart() {
-
-        super(Material.ROCK, BASENAME);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+        super(Material.rock, BASENAME);
+        this.setHardness(2.0F); // Set hardness as an example, adjust as needed
     }
 
     @Override
     public TileEntity createNewTileEntity(World worldIn, int meta) {
-
         return new TileEntityMobFactoryHeart();
     }
 
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
-
-        super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-
-        EnumFacing f = placer.getHorizontalFacing().getOpposite();
-        worldIn.setBlockState(pos, state.withProperty(FACING, f), 2);
+    public void onBlockPlacedBy(World worldIn, int x, int y, int z, EntityLivingBase placer, ItemStack itemIn) {
+        int rotation = determineOrientation(worldIn, x, y, z, placer);
+        worldIn.setBlockMetadataWithNotify(x, y, z, rotation, 2);
     }
 
-    @SideOnly(Side.CLIENT)
-    @Override
-    public void initModel() {
+    private int determineOrientation(World world, int x, int y, int z, EntityLivingBase entity) {
+        if (Math.abs(entity.posX - x) < 2.0 && Math.abs(entity.posZ - z) < 2.0) {
+            double d0 = entity.posY + 1.82 - entity.getYOffset();
 
-        ModelHelper.registerBlock(ModBlocks.blockFactoryHeart, BASENAME);
+            if (d0 - y > 2.0) {
+                return 1; // Top
+            }
+
+            if (y - d0 > 0.0) {
+                return 0; // Bottom
+            }
+        }
+
+        int facing = MathHelper.floor_double(entity.rotationYaw * 4.0F / 360.0F + 0.5D) & 3;
+        return facing == 0 ? 2 : (facing == 1 ? 5 : (facing == 2 ? 3 : (facing == 3 ? 4 : 0))); // North by default
+    }
+
+    @Override
+    public boolean onBlockActivated(World worldIn, int x, int y, int z, EntityPlayer player, int side, float subX, float subY, float subZ) {
+        if (worldIn.isRemote) {
+            return true;
+        }
+
+        TileEntity te = worldIn.getTileEntity(x, y, z);
+        if (te instanceof TileEntityMobFactoryHeart) {
+            TileEntityMobFactoryHeart heart = (TileEntityMobFactoryHeart) te;
+            ItemStack heldItem = player.getHeldItem();
+
+            if (heldItem == null || heldItem.getItem() == null) {
+                heart.showGui(player, worldIn, x, y, z);
+                return true;
+            }
+
+            if (heldItem.getItem() instanceof IValidateTool) {
+                IValidateTool tool = (IValidateTool) heldItem.getItem();
+                if (tool.isValidateTier(heldItem)) {
+                    EnumMobFactoryTier tier = ValidateToolUtils.getModeFromNbt(heldItem).getTierFromMode();
+                    if (tier != null) {
+                        heart.manualFarmScan(player, tier);
+                    }
+                } else if (tool.isValidateExport(heldItem)) {
+                    heart.outputFarmScan(player);
+                } else if (tool.isValidateImport(heldItem)) {
+                    heart.inputFarmScan(player);
+                }
+
+                return true;
+            }
+        }
+
+        return super.onBlockActivated(worldIn, x, y, z, player, side, subX, subY, subZ);
     }
 
     @Override
@@ -70,79 +97,9 @@ public class BlockMobFactoryHeart extends BlockWoot implements ITooltipInfo, ITi
 
     }
 
-    public IBlockState getStateFromMeta(int meta)
-    {
-        EnumFacing enumfacing = EnumFacing.getFront(meta);
-
-        if (enumfacing.getAxis() == EnumFacing.Axis.Y)
-            enumfacing = EnumFacing.NORTH;
-
-        return this.getDefaultState().withProperty(FACING, enumfacing);
-    }
-
-    public int getMetaFromState(IBlockState state)
-    {
-
-        return state.getValue(FACING).getIndex();
-    }
-
-    protected BlockStateContainer createBlockState()
-    {
-
-        return new BlockStateContainer(this, new IProperty[] {FACING});
-    }
-
     @Override
-    public void addProbeInfo(ProbeMode mode, IProbeInfo probeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData data) {
-
-        TileEntity te = world.getTileEntity(data.getPos());
-        if (te instanceof IMobFarm) {
-            FarmUIInfo info = new FarmUIInfo();
-            ((IMobFarm) te).getUIInfo(info);
-            if (info.isValid)
-                TOPUIInfoConvertors.farmConvertor(info, mode, probeInfo, player, world, blockState, data);
-        }
-    }
-
-    public static class PluginTooltipInfo {
-
-        private PluginTooltipInfo() { }
-    }
-
-    @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-
-        if (worldIn.isRemote)
-            return true;
-
-        TileEntity te = worldIn.getTileEntity(pos);
-        if (te instanceof TileEntityMobFactoryHeart) {
-
-            TileEntityMobFactoryHeart heart = (TileEntityMobFactoryHeart) te;
-            ItemStack heldItem = playerIn.getHeldItemMainhand();
-
-            if (heldItem.isEmpty()) {
-                heart.showGui(playerIn, worldIn, pos.getX(), pos.getY(), pos.getZ());
-                return true;
-            }
-
-            if (heldItem.getItem() instanceof IValidateTool) {
-
-                IValidateTool tool = (IValidateTool) heldItem.getItem();
-                if (tool.isValidateTier(heldItem)) {
-                    EnumMobFactoryTier tier = ValidateToolUtils.getModeFromNbt(heldItem).getTierFromMode();
-                    if (tier != null)
-                        heart.manualFarmScan(playerIn, tier);
-                } else if (tool.isValidateExport(heldItem)) {
-                    heart.outputFarmScan(playerIn);
-                } else if (tool.isValidateImport(heldItem)) {
-                    heart.inputFarmScan(playerIn);
-                }
-
-                return true;
-            }
-        }
-
-        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+    @SideOnly(Side.CLIENT)
+    public void initModel() {
+        ModelHelper.registerBlock(ModBlocks.blockFactoryHeart, BASENAME);
     }
 }

@@ -1,28 +1,28 @@
 package ipsis.woot.multiblock;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 
 public class MobFactoryModule {
 
-    BlockPos offset;
+    ChunkCoordinates offset;
     EnumMobFactoryModule moduleType;
 
-    public MobFactoryModule(BlockPos offset, EnumMobFactoryModule moduleType) {
+    public MobFactoryModule(ChunkCoordinates offset, EnumMobFactoryModule moduleType) {
 
         this.offset = offset;
         this.moduleType = moduleType;
     }
 
     /**
-     * This always returns a new BlockPos
+     * This always returns a new ChunkCoordinates
      */
-    public BlockPos getOffsetBlock(BlockPos currPos) {
+    public ChunkCoordinates getOffsetBlock(ChunkCoordinates currPos) {
 
         return currPos.add(offset.getX(), offset.getY(), offset.getZ());
     }
 
     public EnumMobFactoryModule getModuleType() { return this.moduleType; }
-    public BlockPos getOffset() { return this.offset; }
+    public ChunkCoordinates getOffset() { return this.offset; }
 
     @Override
     public String toString() {

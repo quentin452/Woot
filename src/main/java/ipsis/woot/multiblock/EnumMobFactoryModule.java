@@ -1,9 +1,8 @@
 package ipsis.woot.multiblock;
 
 import ipsis.woot.util.WootColor;
-import net.minecraft.util.IStringSerializable;
 
-public enum EnumMobFactoryModule implements IStringSerializable {
+public enum EnumMobFactoryModule {
 
     BLOCK_1("block_1", WootColor.RED, 'g'),
     BLOCK_2("block_2", WootColor.GRAY, 'r'),
@@ -38,7 +37,7 @@ public enum EnumMobFactoryModule implements IStringSerializable {
        return this.character;
     }
 
-    @Override
+
     public String getName() {
         return this.name;
     }

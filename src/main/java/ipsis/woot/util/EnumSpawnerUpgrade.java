@@ -3,9 +3,8 @@ package ipsis.woot.util;
 import ipsis.woot.block.EnumVariantUpgrade;
 import ipsis.woot.block.EnumVariantUpgradeB;
 import ipsis.woot.configuration.EnumConfigKey;
-import net.minecraft.util.IStringSerializable;
 
-public enum EnumSpawnerUpgrade implements IStringSerializable {
+public enum EnumSpawnerUpgrade {
 
     RATE_I(EnumConfigKey.RATE_1_POWER_TICK, EnumConfigKey.RATE_1_PARAM, 1),
     RATE_II(EnumConfigKey.RATE_2_POWER_TICK, EnumConfigKey.RATE_2_PARAM, 2),
@@ -73,7 +72,7 @@ public enum EnumSpawnerUpgrade implements IStringSerializable {
         return values()[meta];
     }
 
-    @Override
+
     public String getName() {
 
         return toString();

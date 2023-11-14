@@ -1,7 +1,7 @@
 package ipsis.woot.farmstructure;
 
 import ipsis.woot.util.EnumFarmUpgrade;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -14,15 +14,15 @@ public class ScannedFarmUpgrade {
 
     public static class Upgrade {
 
-        Set<BlockPos> blocks = new HashSet<>();
+        Set<ChunkCoordinates> blocks = new HashSet<>();
         EnumFarmUpgrade upgrade;
         int upgradeTier;
 
     }
 
-    public Set<BlockPos> getBlocks() {
+    public Set<ChunkCoordinates> getBlocks() {
 
-        Set<BlockPos> blocks = new HashSet<>();
+        Set<ChunkCoordinates> blocks = new HashSet<>();
         for (Upgrade u : upgradeList)
             blocks.addAll(u.blocks);
 

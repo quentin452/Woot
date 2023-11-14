@@ -2,7 +2,7 @@ package ipsis.woot.farmblocks;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -13,7 +13,7 @@ import java.util.Stack;
 public class StructureMasterLocator implements IFarmBlockMasterLocator {
 
     @Nullable
-    public IFarmBlockMaster findMaster(World world, BlockPos origin, IFactoryGlueProvider iFactoryGlueProvider) {
+    public IFarmBlockMaster findMaster(World world, ChunkCoordinates origin, IFactoryGlueProvider iFactoryGlueProvider) {
 
         List<IFactoryGlueProvider> connected = new ArrayList<>();
         Stack<IFactoryGlueProvider> traversing = new Stack<>();
@@ -28,7 +28,7 @@ public class StructureMasterLocator implements IFarmBlockMasterLocator {
             connected.add(curr);
             for (EnumFacing facing : EnumFacing.values()) {
 
-                BlockPos pos = curr.getIFactoryGlue().getPos().offset(facing);
+                ChunkCoordinates pos = curr.getIFactoryGlue().getPos().offset(facing);
                 if (world.isBlockLoaded(pos)) {
                     TileEntity te = world.getTileEntity(curr.getIFactoryGlue().getPos().offset(facing));
                     if (te instanceof IFactoryGlueProvider && !connected.contains(te)) {

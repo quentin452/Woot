@@ -5,7 +5,6 @@ import java.util.EnumSet;
 import java.util.List;
 
 import static ipsis.woot.reference.Config.*;
-import static net.minecraftforge.common.config.Configuration.CATEGORY_CLIENT;
 import static net.minecraftforge.common.config.Configuration.CATEGORY_GENERAL;
 
 /**
@@ -14,12 +13,12 @@ import static net.minecraftforge.common.config.Configuration.CATEGORY_GENERAL;
 public enum EnumConfigKey {
 
     SIMPLE_LAYOUT(
-            CATEGORY_CLIENT,
-            "Render the layout as colors",
-            "simpleLayout",
-            Boolean.class,
-            false,
-            false),
+        "client",
+        "Render the layout as colors",
+        "simpleLayout",
+        Boolean.class,
+        false,
+        false),
     TARTARUS_ID(
             CATEGORY_GENERAL,
             "Dimension id of Tartarus",

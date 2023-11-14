@@ -8,7 +8,7 @@ import ipsis.woot.util.DebugSetup;
 import ipsis.woot.util.EnumEnchantKey;
 import ipsis.woot.util.WootMobName;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public class TartarusSchool implements ILootLearner {
     private int spawnId = INVALID_SPAWN_ID;
 
     @Override
-    public void tick(ITickTracker tickTracker, World world, BlockPos origin, IFarmSetup farmSetup) {
+    public void tick(ITickTracker tickTracker, World world, ChunkCoordinates origin, IFarmSetup farmSetup) {
 
         // Just before we do another spawn, try and pickup the drops
         if (!tickTracker.hasLearnTickExpired())

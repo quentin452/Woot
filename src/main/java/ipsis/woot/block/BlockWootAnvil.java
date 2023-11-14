@@ -1,29 +1,24 @@
 package ipsis.woot.block;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import ipsis.Woot;
 import ipsis.woot.init.ModBlocks;
 import ipsis.woot.init.ModItems;
 import ipsis.woot.oss.client.ModelHelper;
 import ipsis.woot.tileentity.TileEntityAnvil;
-import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.ArrayList;
 
 /**
  * Based off BlockAnvil in vanilla - but without the damage
@@ -31,106 +26,62 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class BlockWootAnvil extends BlockWoot implements ITileEntityProvider {
 
     public static final String BASENAME = "anvil";
-    public static final PropertyDirection FACING = BlockHorizontal.FACING;
-    protected static final AxisAlignedBB X_AXIS_AABB = new AxisAlignedBB(0.0D, 0.0D, 0.125D, 1.0D, 1.0D, 0.875D);
-    protected static final AxisAlignedBB Z_AXIS_AABB = new AxisAlignedBB(0.125D, 0.0D, 0.0D, 0.875D, 1.0D, 1.0D);
 
     public BlockWootAnvil() {
 
-        super(Material.ANVIL, BASENAME);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
+        super(Material.anvil, BASENAME);
+      //  this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
     }
 
     @Override
-    public boolean isFullCube(IBlockState state) {
+    public boolean isOpaqueCube() {
 
         return false;
     }
 
-    @Override
-    public boolean isOpaqueCube(IBlockState state) {
-
-        return false;
-    }
 
     @Override
-    public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand) {
-
-        EnumFacing enumFacing = placer.getHorizontalFacing().rotateY();
-        return super.getStateForPlacement(world, pos, facing, hitX, hitY, hitZ, meta, placer).withProperty(FACING, enumFacing);
-    }
-
-    @Override
-    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {
-
-        EnumFacing enumFacing = state.getValue(FACING);
-        return enumFacing.getAxis() == EnumFacing.Axis.X ? X_AXIS_AABB : Z_AXIS_AABB;
-    }
-
-    @Override
-    public void getDrops(NonNullList<ItemStack> drops, IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
+        ArrayList<ItemStack> drops = new ArrayList<ItemStack>();
 
         // Get the main block
-        super.getDrops(drops, world, pos, state, fortune);
+        super.getDrops(world, x, y, z, metadata, fortune);
 
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getTileEntity(x, y, z);
         if (te instanceof TileEntityAnvil) {
             // Add any items that were in the anvil
-            TileEntityAnvil anvil = (TileEntityAnvil)te;
+            TileEntityAnvil anvil = (TileEntityAnvil) te;
             ItemStack itemStack = anvil.getBaseItem();
-            if (!itemStack.isEmpty())
+            if (itemStack != null) {
                 drops.add(itemStack.copy());
+            }
         }
+
+        return drops;
     }
 
     @Override
-    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
-
+    public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) {
         // From TinkersConstruct to allow the TE exist while processing the getDrops
-        this.onBlockDestroyedByPlayer(world, pos, state);
-        if (willHarvest)
-            this.harvestBlock(world, player, pos, state, world.getTileEntity(pos), player.getHeldItemMainhand());
+        this.onBlockDestroyedByPlayer(world, x, y, z, world.getBlockMetadata(x, y, z));
+        if (willHarvest) {
+            this.harvestBlock(world, player, x, y, z, world.getBlockMetadata(x, y, z));
+        }
 
-        world.setBlockToAir(pos);
+        world.setBlockToAir(x, y, z);
         return false;
     }
 
     @SideOnly(Side.CLIENT)
     @Override
-    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+    public boolean shouldSideBeRendered(IBlockAccess worldIn, int x, int y, int z, int side) {
 
         return true;
     }
 
     @Override
-    public IBlockState getStateFromMeta(int meta) {
-
-        return this.getDefaultState().withProperty(FACING, EnumFacing.getHorizontal(meta & 3));
-    }
-
-    @Override
-    public int getMetaFromState(IBlockState state) {
-
-        return state.getValue(FACING).getHorizontalIndex();
-    }
-
-
-    @Override
-    public IBlockState withRotation(IBlockState state, Rotation rot)
-    {
-        return state.getBlock() != this ? state : state.withProperty(FACING, rot.rotate(state.getValue(FACING)));
-    }
-
-    @Override
-    protected BlockStateContainer createBlockState()
-    {
-        return new BlockStateContainer(this, new IProperty[] {FACING});
-    }
-
-    @Override
-    public EnumBlockRenderType getRenderType(IBlockState state) {
-
-        return EnumBlockRenderType.MODEL;
+    public int getRenderType() {
+        return 3;
     }
 
     @SideOnly(Side.CLIENT)
@@ -147,47 +98,43 @@ public class BlockWootAnvil extends BlockWoot implements ITileEntityProvider {
     }
 
     @Override
-    public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-
-        if (!worldIn.isRemote) {
-            TileEntity te = worldIn.getTileEntity(pos);
+    public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float subX, float subY, float subZ) {
+        if (!world.isRemote) {
+            TileEntity te = world.getTileEntity(x, y, z);
             if (te instanceof TileEntityAnvil) {
-                TileEntityAnvil anvil = (TileEntityAnvil)te;
-                ItemStack playerItem = playerIn.getHeldItem(hand);
-                if (anvil.getBaseItem().isEmpty()) {
+                TileEntityAnvil anvil = (TileEntityAnvil) te;
+                ItemStack playerItem = player.getHeldItem();
+
+                if (anvil.getBaseItem() == null) {
                     if (Woot.anvilManager.isValidBaseItem(playerItem)) {
                         // From player hand to empty anvil
                         ItemStack baseItem = playerItem.copy();
-                        baseItem.setCount(1);
+                        baseItem.stackSize = 1;
                         anvil.setBaseItem(baseItem);
 
-                        playerItem.setCount(playerItem.getCount() - 1);
-                        if (playerItem.isEmpty()) {
-                            playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, ItemStack.EMPTY);
-                        } else {
-                            playerIn.inventory.setInventorySlotContents(playerIn.inventory.currentItem, playerItem);
+                        playerItem.stackSize--;
+                        if (playerItem.stackSize <= 0) {
+                            player.inventory.setInventorySlotContents(player.inventory.currentItem, null);
                         }
-                        playerIn.openContainer.detectAndSendChanges();
-
+                        player.openContainer.detectAndSendChanges();
                     }
                 } else {
-                    if (playerItem.getItem() == ModItems.itemYahHammer) {
-                        anvil.tryCraft(playerIn);
+                    if (playerItem != null && playerItem.getItem() == ModItems.itemYahHammer) {
+                        anvil.tryCraft(player);
                     } else {
                         // From anvil to player
                         ItemStack baseItem = anvil.getBaseItem();
-                        anvil.setBaseItem(ItemStack.EMPTY);
-                        if (!playerIn.inventory.addItemStackToInventory(baseItem)) {
-                            EntityItem entityItem = new EntityItem(worldIn, pos.getX(), pos.getY() + 1, pos.getZ(), baseItem);
-                            worldIn.spawnEntity(entityItem);
+                        anvil.setBaseItem(null);
+                        if (!player.inventory.addItemStackToInventory(baseItem)) {
+                            EntityItem entityItem = new EntityItem(world, x + 0.5, y + 1.5, z + 0.5, baseItem);
+                            world.spawnEntityInWorld(entityItem);
                         } else {
-                            playerIn.openContainer.detectAndSendChanges();
+                            player.openContainer.detectAndSendChanges();
                         }
                     }
                 }
             }
         }
-
         return true;
     }
 }

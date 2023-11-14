@@ -2,7 +2,7 @@ package ipsis.woot.farming;
 
 import ipsis.woot.oss.ItemHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -174,7 +174,7 @@ public class SpawnRecipeConsumer implements ISpawnRecipeConsumer {
     }
 
     @Override
-    public boolean consume(World world, BlockPos pos, List<IFluidHandler> fluidHandlerList, List<IItemHandler> itemHandlerList, @Nullable ISpawnRecipe spawnRecipe, int mobCount, boolean simulate) {
+    public boolean consume(World world, ChunkCoordinates pos, List<IFluidHandler> fluidHandlerList, List<IItemHandler> itemHandlerList, @Nullable ISpawnRecipe spawnRecipe, int mobCount, boolean simulate) {
 
         if (spawnRecipe == null)
             return true;

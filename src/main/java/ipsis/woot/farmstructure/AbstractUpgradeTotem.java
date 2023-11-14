@@ -1,7 +1,7 @@
 package ipsis.woot.farmstructure;
 
 import ipsis.woot.util.EnumSpawnerUpgrade;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 
 import javax.annotation.Nonnull;
@@ -12,8 +12,8 @@ public abstract class AbstractUpgradeTotem {
 
     EnumSpawnerUpgrade spawnerUpgrade;
     int spawnerUpgradeLevel;
-    Set<BlockPos> blockPosList;
-    BlockPos origin;
+    Set<ChunkCoordinates> ChunkCoordinatesList;
+    ChunkCoordinates origin;
     World world;
 
     public boolean isValid() {
@@ -21,11 +21,11 @@ public abstract class AbstractUpgradeTotem {
         return spawnerUpgrade != null && spawnerUpgradeLevel != 0;
     }
 
-    AbstractUpgradeTotem(@Nonnull World world, @Nonnull BlockPos origin) {
+    AbstractUpgradeTotem(@Nonnull World world, @Nonnull ChunkCoordinates origin) {
 
         spawnerUpgrade = null;
         spawnerUpgradeLevel = 0;
-        blockPosList = new HashSet<>();
+        ChunkCoordinatesList = new HashSet<>();
         this.world = world;
         this.origin = origin;
     }

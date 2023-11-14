@@ -8,7 +8,7 @@ import ipsis.woot.reference.Reference;
 import ipsis.woot.tileentity.TileEntityMobFactoryHeart;
 import ipsis.woot.util.DebugSetup;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.World;
 
 import java.util.function.Consumer;
@@ -27,11 +27,11 @@ public class RitualLifeEssenceTank extends Ritual {
      */
     private static final String HEART_RANGE = "heart";
 
-    private BlockPos heartOffsetPos = new BlockPos(0, 0, 0);
+    private ChunkCoordinates heartOffsetPos = new ChunkCoordinates(0, 0, 0);
 
     public RitualLifeEssenceTank() {
         super(RITUAL_NAME, CRYSTAL_LEVEL, ACTIVATION_COST, "ritual." + Reference.MOD_ID + "." + RITUAL_NAME);
-        addBlockRange(HEART_RANGE, new AreaDescriptor.Rectangle(new BlockPos(-10, -10, -10), 21));
+        addBlockRange(HEART_RANGE, new AreaDescriptor.Rectangle(new ChunkCoordinates(-10, -10, -10), 21));
     }
 
 
@@ -44,16 +44,16 @@ public class RitualLifeEssenceTank extends Ritual {
         return heart.getRunning() == 1;
     }
 
-    private IBloodMagicHandler findHandler(World world, BlockPos pos) {
+    private IBloodMagicHandler findHandler(World world, ChunkCoordinates pos) {
 
-        BlockPos heartPos = pos.add(heartOffsetPos);
+        ChunkCoordinates heartPos = pos.add(heartOffsetPos);
         TileEntity te = world.getTileEntity(heartPos);
 
         AreaDescriptor heartRange = getBlockRange(HEART_RANGE);
 
         if (!heartRange.isWithinArea(heartOffsetPos) || !isValidFactory(te)) {
 
-            for (BlockPos newPos : heartRange.getContainedPositions(pos)) {
+            for (ChunkCoordinates newPos : heartRange.getContainedPositions(pos)) {
                 TileEntity nextTile = world.getTileEntity(newPos);
                 if (nextTile instanceof IBloodMagicHandler) {
                     te = nextTile;
@@ -76,7 +76,7 @@ public class RitualLifeEssenceTank extends Ritual {
         if (!BloodMagicHelper.canPerformRitual(masterRitualStone, getRefreshCost()))
             return;
         World world = masterRitualStone.getWorldObj();
-        IBloodMagicHandler iBloodMagicHandler = findHandler(world, masterRitualStone.getBlockPos());
+        IBloodMagicHandler iBloodMagicHandler = findHandler(world, masterRitualStone.getChunkCoordinates());
         if (iBloodMagicHandler != null) {
             Woot.debugSetup.trace(DebugSetup.EnumDebugType.GEN_BM_LE, "performRitual - LifeEssenceTank", "keepAlive");
             iBloodMagicHandler.keepAliveTankRitual();

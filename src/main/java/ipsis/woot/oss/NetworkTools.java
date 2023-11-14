@@ -10,7 +10,7 @@ import java.io.IOException;
 
 /**
  * Selected methods from TheOneProbe/NetworkTools.java
- * License - https://github.com/McJty/TheOneProbe/blob/1.10/LICENCE
+ * License - <a href="https://github.com/McJty/TheOneProbe/blob/1.10/LICENCE">...</a>
  */
 public class NetworkTools {
 

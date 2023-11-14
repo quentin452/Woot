@@ -1,5 +1,7 @@
 package ipsis.woot.block;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import ipsis.Woot;
 import ipsis.woot.configuration.EnumConfigKey;
 import ipsis.woot.power.storage.IPowerStation;
@@ -7,12 +9,6 @@ import ipsis.woot.reference.Reference;
 import ipsis.woot.tileentity.TileEntityMobFactoryCell;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.properties.PropertyEnum;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -20,18 +16,14 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.IStringSerializable;
-import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -41,13 +33,9 @@ public class BlockMobFactoryCell extends BlockWoot implements ITileEntityProvide
 
     public static final String BASENAME = "cell";
 
-    public static final PropertyBool FORMED = PropertyBool.create("formed");
-    public static final PropertyEnum<EnumCellTier> TIER = PropertyEnum.<EnumCellTier>create("tier", EnumCellTier.class);
-
     public BlockMobFactoryCell() {
-
-        super(Material.ROCK, BASENAME);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(TIER, EnumCellTier.TIER_I).withProperty(FORMED, false));
+        super(Material.rock, BASENAME);
+     //   this.setDefaultState(this.blockState.getBaseState().withProperty(TIER, EnumCellTier.TIER_I).withProperty(FORMED, false));
     }
 
     @Nullable
@@ -60,77 +48,49 @@ public class BlockMobFactoryCell extends BlockWoot implements ITileEntityProvide
     }
 
     @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, new IProperty[] { TIER, FORMED } );
-    }
+    public void onBlockAdded(World worldIn, int x, int y, int z) {
 
-    @Override
-    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
-
-        TileEntity te = worldIn.getTileEntity(pos);
+        TileEntity te = worldIn.getTileEntity(x,y,z);
         if (te instanceof TileEntityMobFactoryCell)
             ((TileEntityMobFactoryCell) te).onBlockAdded();
     }
 
     @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
-
-        if (worldIn.getTileEntity(pos) instanceof TileEntityMobFactoryCell) {
-            TileEntityMobFactoryCell te = (TileEntityMobFactoryCell) worldIn.getTileEntity(pos);
-            boolean formed = false;
-            if (te != null)
-                formed = te.isClientFormed();
-            return state.withProperty(FORMED, formed);
-        }
-
-        return state;
-    }
-
-    @Override
-    public int damageDropped(IBlockState state) {
-
-        return state.getValue(TIER).getMetadata();
+    public int damageDropped(int meta) {
+        return EnumCellTier.byMetadata(meta).getMetadata();
     }
 
     @SideOnly(Side.CLIENT)
     @Override
-    public void getSubBlocks(CreativeTabs itemIn, NonNullList<ItemStack> items) {
+    public void getSubBlocks(Item itemIn, CreativeTabs tab, List list){
+
+        List<ItemStack> items = new ArrayList<>();
 
         for (EnumCellTier t : EnumCellTier.values())
             items.add(new ItemStack(this, 1, t.getMetadata()));
+
+        list.addAll(items);
     }
 
     @Override
-    public IBlockState getStateFromMeta(int meta) {
-
-        return this.getDefaultState().withProperty(TIER, EnumCellTier.byMetadata(meta)).withProperty(FORMED, false);
-    }
-
-    @Override
-    public boolean isOpaqueCube(IBlockState state) {
+    public boolean isOpaqueCube() {
         return false;
     }
 
     @Override
-    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+    @SideOnly(Side.CLIENT)
+    public boolean shouldSideBeRendered(IBlockAccess worldIn, int x, int y, int z, int side) {
         return true;
     }
 
     @Override
-    public int getMetaFromState(IBlockState state) {
+    public ArrayList<ItemStack> getDrops(World world, int x, int y, int z, int metadata, int fortune) {
 
-        return state.getValue(TIER).getMetadata();
-    }
-
-    @Override
-    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
-
-        TileEntity te = world.getTileEntity(pos);
+        TileEntity te = world.getTileEntity(x,y,z);
         if (te instanceof TileEntityMobFactoryCell) {
-            List<ItemStack> drops = super.getDrops(world, pos, state, fortune);
+            ArrayList<ItemStack> drops = super.getDrops(world, x,y,z,metadata,fortune);
             IPowerStation powerStation = ((TileEntityMobFactoryCell) te).getPowerStation();
-            if (powerStation != null) {
-                if (!drops.isEmpty()) {
+            if (powerStation != null && (!drops.isEmpty())) {
                     NBTTagCompound compound = drops.get(0).getTagCompound();
                     if (compound == null) {
                         compound = new NBTTagCompound();
@@ -138,47 +98,47 @@ public class BlockMobFactoryCell extends BlockWoot implements ITileEntityProvide
                     }
 
                     powerStation.writeToNBT(compound);
-                }
+
             }
             return drops;
 
         }
 
-        return super.getDrops(world, pos, state, fortune);
+        return super.getDrops(world, x,y,z, metadata, fortune);
     }
 
     @Override
-    public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+    public void onBlockPlacedBy(World worldIn, int x, int y, int z, EntityLivingBase placer, ItemStack itemIn) {
 
-        super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
-        if (stack.hasTagCompound() && !worldIn.isRemote) {
-            TileEntity te = worldIn.getTileEntity(pos);
+        super.onBlockPlacedBy(worldIn, x,y,z, placer, itemIn);
+        if (itemIn.hasTagCompound() && !worldIn.isRemote) {
+            TileEntity te = worldIn.getTileEntity(x,y,z);
             if (te instanceof TileEntityMobFactoryCell) {
-                ((TileEntityMobFactoryCell) te).getPowerStation().readFromNBT(stack.getTagCompound());
+                ((TileEntityMobFactoryCell) te).getPowerStation().readFromNBT(itemIn.getTagCompound());
             }
         }
     }
 
     @Override
-    public boolean removedByPlayer(IBlockState state, World world, BlockPos pos, EntityPlayer player, boolean willHarvest) {
+    public boolean removedByPlayer(World world, EntityPlayer player, int x, int y, int z, boolean willHarvest) {
+        int metadata = world.getBlockMetadata(x, y, z);
 
-        // From TinkersConstruct to allow the TE exist while processing the getDrops
-        this.onBlockDestroyedByPlayer(world, pos, state);
-        if (willHarvest)
-            this.harvestBlock(world, player, pos, state, world.getTileEntity(pos), player.getHeldItemMainhand());
+        // From TinkersConstruct to allow the TE to exist while processing the getDrops
+        this.onBlockDestroyedByPlayer(world, x, y, z, metadata);
 
-        world.setBlockToAir(pos);
+        if (willHarvest) {
+            this.harvestBlock(world, player, x, y, z, metadata);
+        }
+
+        world.setBlockToAir(x, y, z);
         return false;
     }
 
     @SideOnly(Side.CLIENT)
     @Override
     public void initModel() {
-
         Item itemBlockVariants = Item.REGISTRY.getObject(new ResourceLocation(Reference.MOD_ID, BASENAME));
-
         for (int i = 0; i < EnumCellTier.VALUES.length; i++) {
-
             EnumCellTier e = EnumCellTier.VALUES[i];
             ModelResourceLocation itemModelResourceLocation = new ModelResourceLocation(
                     Reference.MOD_ID + ":" + BASENAME + "_" + e, "inventory");
@@ -186,20 +146,20 @@ public class BlockMobFactoryCell extends BlockWoot implements ITileEntityProvide
         }
     }
 
-    public enum EnumCellTier implements IStringSerializable {
+    public enum EnumCellTier {
+
         TIER_I("tier_i"),
         TIER_II("tier_ii"),
         TIER_III("tier_iii");
 
-        String name;
+        public static EnumCellTier[] VALUES = {TIER_I, TIER_II, TIER_III};
+
+        private final String name;
+
         EnumCellTier(String name) {
             this.name = name;
         }
 
-        public static EnumCellTier[] VALUES = { TIER_I, TIER_II, TIER_III };
-
-
-        @Override
         public String getName() {
 
             return this.name;

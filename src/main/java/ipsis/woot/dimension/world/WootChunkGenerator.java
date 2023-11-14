@@ -6,7 +6,7 @@ import ipsis.woot.util.DebugSetup;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
@@ -67,13 +67,13 @@ public class WootChunkGenerator implements IChunkGenerator {
     }
 
     @Override
-    public List<Biome.SpawnListEntry> getPossibleCreatures(EnumCreatureType creatureType, BlockPos pos) {
+    public List<Biome.SpawnListEntry> getPossibleCreatures(EnumCreatureType creatureType, ChunkCoordinates pos) {
         return ImmutableList.of();
     }
 
     @Nullable
     @Override
-    public BlockPos getNearestStructurePos(World worldIn, String structureName, BlockPos position, boolean findUnexplored) {
+    public ChunkCoordinates getNearestStructurePos(World worldIn, String structureName, ChunkCoordinates position, boolean findUnexplored) {
         return null;
     }
 
@@ -83,7 +83,7 @@ public class WootChunkGenerator implements IChunkGenerator {
     }
 
     @Override
-    public boolean isInsideStructure(World worldIn, String structureName, BlockPos pos) {
+    public boolean isInsideStructure(World worldIn, String structureName, ChunkCoordinates pos) {
         return false;
     }
 }

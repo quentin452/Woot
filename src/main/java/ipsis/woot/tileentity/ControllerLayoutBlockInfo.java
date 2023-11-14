@@ -1,24 +1,24 @@
 package ipsis.woot.tileentity;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 
 public class ControllerLayoutBlockInfo implements  ILayoutBlockInfo {
 
-    BlockPos blockPos;
+    ChunkCoordinates ChunkCoordinates;
 
-    public ControllerLayoutBlockInfo(BlockPos pos) {
+    public ControllerLayoutBlockInfo(ChunkCoordinates pos) {
 
-        this.blockPos = pos;
+        this.ChunkCoordinates = pos;
     }
 
     @Override
-    public BlockPos getPos() {
-        return blockPos;
+    public ChunkCoordinates getPos() {
+        return ChunkCoordinates;
     }
 
     @Override
     public void offsetY(int offset) {
 
-        this.blockPos = blockPos.up(offset);
+        this.ChunkCoordinates = ChunkCoordinates.up(offset);
     }
 }

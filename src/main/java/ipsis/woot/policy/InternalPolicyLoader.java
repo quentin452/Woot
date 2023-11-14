@@ -64,7 +64,7 @@ public class InternalPolicyLoader {
 
         for (String drop : BLACKLIST_ITEMS) {
             ItemStack itemStack = ItemStackHelper.getItemStackFromName(drop);
-            if (!itemStack.isEmpty())
+            if (itemStack != null && itemStack.getItem() != null)
                 policy.addItemToDropList(itemStack, true);
         }
     }

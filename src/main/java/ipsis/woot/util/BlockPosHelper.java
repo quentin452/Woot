@@ -1,7 +1,7 @@
 package ipsis.woot.util;
 
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.EnumFacing;
 
 /**
@@ -17,40 +17,40 @@ import net.minecraft.util.EnumFacing;
 
 public class BlockPosHelper {
 
-    public static BlockPos rotateToSouth(BlockPos blockPos, EnumFacing from) {
+    public static ChunkCoordinates rotateToSouth(ChunkCoordinates ChunkCoordinates, EnumFacing from) {
 
         if (from == EnumFacing.EAST)
-            return new BlockPos(blockPos.getZ() * -1, blockPos.getY(), blockPos.getX());
+            return new ChunkCoordinates(ChunkCoordinates.posZ * -1, ChunkCoordinates.posY, ChunkCoordinates.posX);
         else if (from == EnumFacing.NORTH)
-            return new BlockPos(blockPos.getX() * -1, blockPos.getY(), blockPos.getZ() * -1);
+            return new ChunkCoordinates(ChunkCoordinates.posX * -1, ChunkCoordinates.posY, ChunkCoordinates.posZ * -1);
         else if (from == EnumFacing.WEST)
-            return new BlockPos(blockPos.getZ(), blockPos.getY(), blockPos.getX() * -1);
+            return new ChunkCoordinates(ChunkCoordinates.posZ, ChunkCoordinates.posY, ChunkCoordinates.posX * -1);
         else
-            return new BlockPos(blockPos);
+            return new ChunkCoordinates(ChunkCoordinates);
     }
 
-    public static BlockPos rotateFromSouth(BlockPos blockPos, EnumFacing to) {
+    public static ChunkCoordinates rotateFromSouth(ChunkCoordinates ChunkCoordinates, EnumFacing to) {
 
         if (to == EnumFacing.EAST)
-            return new BlockPos(blockPos.getZ(), blockPos.getY(), blockPos.getX() * -1);
+            return new ChunkCoordinates(ChunkCoordinates.posZ, ChunkCoordinates.posY, ChunkCoordinates.posX * -1);
         else if (to == EnumFacing.WEST)
-            return new BlockPos(blockPos.getZ() * -1, blockPos.getY(), blockPos.getX());
+            return new ChunkCoordinates(ChunkCoordinates.posZ * -1, ChunkCoordinates.posY, ChunkCoordinates.posX);
         else if (to == EnumFacing.NORTH)
-            return new BlockPos(blockPos.getX() * -1, blockPos.getY(), blockPos.getZ() * -1);
+            return new ChunkCoordinates(ChunkCoordinates.posX * -1, ChunkCoordinates.posY, ChunkCoordinates.posZ * -1);
         else
-            return new BlockPos(blockPos);
+            return new ChunkCoordinates(ChunkCoordinates);
     }
 
 
-    public static void writeToNBT(BlockPos p, NBTTagCompound compound) {
+    public static void writeToNBT(ChunkCoordinates p, NBTTagCompound compound) {
 
-        compound.setInteger("xCoord", p.getX());
-        compound.setInteger("yCoord", p.getY());
-        compound.setInteger("zCoord", p.getZ());
+        compound.setInteger("xCoord", p.posX);
+        compound.setInteger("yCoord", p.posY);
+        compound.setInteger("zCoord", p.posZ);
     }
 
-    public static BlockPos readFromNBT(NBTTagCompound compound) {
+    public static ChunkCoordinates readFromNBT(NBTTagCompound compound) {
 
-        return new BlockPos(compound.getInteger("xCoord"), compound.getInteger("yCoord"), compound.getInteger("zCoord"));
+        return new ChunkCoordinates(compound.getInteger("xCoord"), compound.getInteger("yCoord"), compound.getInteger("zCoord"));
     }
 }

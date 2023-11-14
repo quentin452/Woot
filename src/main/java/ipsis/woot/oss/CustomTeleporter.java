@@ -4,7 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.Teleporter;
 import net.minecraft.world.WorldServer;
 
@@ -30,7 +30,7 @@ public class CustomTeleporter extends Teleporter {
     @Override
     public void placeInPortal(Entity entityIn, float rotationYaw) {
 
-        this.worldServer.getBlockState(new BlockPos(this.x, this.y, this.z));
+        this.worldServer.getBlockState(new ChunkCoordinates(this.x, this.y, this.z));
         entityIn.setPosition(this.x, this.y, this.z);
         entityIn.motionX = 0.0f;
         entityIn.motionY = 0.0f;

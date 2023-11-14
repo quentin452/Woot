@@ -3,18 +3,18 @@ package ipsis.woot.loot.schools;
 import ipsis.Woot;
 import ipsis.woot.util.DebugSetup;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 
 public class SpawnBox {
 
-    private BlockPos basePos;
-    private BlockPos spawnPos;
+    private ChunkCoordinates basePos;
+    private ChunkCoordinates spawnPos;
     private boolean used = false;
     private AxisAlignedBB axisAlignedBB;
 
-    public SpawnBox(BlockPos basePos, BlockPos spawnPos) {
-        this.basePos = new BlockPos(basePos);
-        this.spawnPos = new BlockPos(spawnPos);
+    public SpawnBox(ChunkCoordinates basePos, ChunkCoordinates spawnPos) {
+        this.basePos = new ChunkCoordinates(basePos);
+        this.spawnPos = new ChunkCoordinates(spawnPos);
 
         Woot.debugSetup.trace(DebugSetup.EnumDebugType.TARTARUS, "SpawnBox", "BasePos:" + basePos + " SpawnPos:" + spawnPos);
     }
@@ -38,10 +38,10 @@ public class SpawnBox {
         return this.used;
     }
 
-    public BlockPos getBasePos() {
+    public ChunkCoordinates getBasePos() {
         return this.basePos;
     }
-    public BlockPos getSpawnPos() { return this.spawnPos; }
+    public ChunkCoordinates getSpawnPos() { return this.spawnPos; }
 
     public AxisAlignedBB getAxisAlignedBB() {
 

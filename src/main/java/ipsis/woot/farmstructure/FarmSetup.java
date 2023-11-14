@@ -11,7 +11,7 @@ import ipsis.woot.util.WootMob;
 import ipsis.woot.util.WootMobName;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
@@ -32,8 +32,8 @@ public class FarmSetup implements IFarmSetup {
     private EnumEnchantKey enchantKey = EnumEnchantKey.NO_ENCHANT;
     private EnumMobFactoryTier tier = EnumMobFactoryTier.TIER_ONE;
     private EnumFacing facing = EnumFacing.SOUTH;
-    private BlockPos exportBlockPos;
-    private BlockPos importBlockPos;
+    private ChunkCoordinates exportChunkCoordinates;
+    private ChunkCoordinates importChunkCoordinates;
     private IPowerStation powerStation;
     private World world;
     private int storedXp = 0;
@@ -154,14 +154,14 @@ public class FarmSetup implements IFarmSetup {
     }
 
     @Override
-    public void setPowerCellBlockPos(BlockPos blockPos) {
+    public void setPowerCellChunkCoordinates(ChunkCoordinates ChunkCoordinates) {
 
-        if (blockPos == null) {
+        if (ChunkCoordinates == null) {
             powerStation = null;
             return;
         }
 
-        TileEntity te = world.getTileEntity(blockPos);
+        TileEntity te = world.getTileEntity(ChunkCoordinates);
         if (te instanceof TileEntityMobFactoryCell) {
             powerStation = ((TileEntityMobFactoryCell) te).getPowerStation();
         } else {
@@ -170,13 +170,13 @@ public class FarmSetup implements IFarmSetup {
     }
 
     @Override
-    public void setExportBlockPos(BlockPos blockPos) {
-        this.exportBlockPos = blockPos;
+    public void setExportChunkCoordinates(ChunkCoordinates ChunkCoordinates) {
+        this.exportChunkCoordinates = ChunkCoordinates;
     }
 
     @Override
-    public void setImportBlockPos(BlockPos blockPos) {
-        this.importBlockPos = blockPos;
+    public void setImportChunkCoordinates(ChunkCoordinates ChunkCoordinates) {
+        this.importChunkCoordinates = ChunkCoordinates;
     }
 
     /**
@@ -194,7 +194,7 @@ public class FarmSetup implements IFarmSetup {
     }
 
     @Nonnull
-    private List<InventoryInfo> getConnectedChests(BlockPos origin) {
+    private List<InventoryInfo> getConnectedChests(ChunkCoordinates origin) {
 
         List<InventoryInfo> chests = new ArrayList<>();
 
@@ -230,7 +230,7 @@ public class FarmSetup implements IFarmSetup {
     }
 
     @Nonnull
-    private List<TankInfo> getConnectedTanks(BlockPos origin, boolean drain) {
+    private List<TankInfo> getConnectedTanks(ChunkCoordinates origin, boolean drain) {
 
         List<TankInfo> tanks = new ArrayList<>();
 
@@ -269,10 +269,10 @@ public class FarmSetup implements IFarmSetup {
 
         List<TileEntity> tanks = new ArrayList<>();
 
-        if (importBlockPos == null)
+        if (importChunkCoordinates == null)
             return tanks;
 
-        List<TankInfo> connected = getConnectedTanks(importBlockPos, true);
+        List<TankInfo> connected = getConnectedTanks(importChunkCoordinates, true);
         for (TankInfo i : connected)
             tanks.add(i.te);
 
@@ -285,10 +285,10 @@ public class FarmSetup implements IFarmSetup {
 
         List<TileEntity> tanks = new ArrayList<>();
 
-        if (exportBlockPos == null)
+        if (exportChunkCoordinates == null)
             return tanks;
 
-        List<TankInfo> connected = getConnectedTanks(exportBlockPos, false);
+        List<TankInfo> connected = getConnectedTanks(exportChunkCoordinates, false);
         for (TankInfo i : connected)
             tanks.add(i.te);
 
@@ -301,10 +301,10 @@ public class FarmSetup implements IFarmSetup {
 
         List<IFluidHandler> tanks = new ArrayList<>();
 
-        if (importBlockPos == null)
+        if (importChunkCoordinates == null)
             return tanks;
 
-        List<TankInfo> connected = getConnectedTanks(importBlockPos, true);
+        List<TankInfo> connected = getConnectedTanks(importChunkCoordinates, true);
         for (TankInfo i : connected)
             tanks.add(i.iFluidHandler);
 
@@ -317,10 +317,10 @@ public class FarmSetup implements IFarmSetup {
 
         List<IFluidHandler> tanks = new ArrayList<>();
 
-        if (exportBlockPos == null)
+        if (exportChunkCoordinates == null)
             return tanks;
 
-        List<TankInfo> connected = getConnectedTanks(exportBlockPos, false);
+        List<TankInfo> connected = getConnectedTanks(exportChunkCoordinates, false);
         for (TankInfo i : connected)
             tanks.add(i.iFluidHandler);
 
@@ -333,10 +333,10 @@ public class FarmSetup implements IFarmSetup {
 
         List<IItemHandler> chests = new ArrayList<>();
 
-        if (importBlockPos == null)
+        if (importChunkCoordinates == null)
             return chests;
 
-        List<InventoryInfo> connected = getConnectedChests(importBlockPos);
+        List<InventoryInfo> connected = getConnectedChests(importChunkCoordinates);
         for (InventoryInfo i : connected)
             chests.add(i.iItemHandler);
 
@@ -350,10 +350,10 @@ public class FarmSetup implements IFarmSetup {
 
         List<IItemHandler> chests = new ArrayList<>();
 
-        if (exportBlockPos == null)
+        if (exportChunkCoordinates == null)
             return chests;
 
-        List<InventoryInfo> connected = getConnectedChests(exportBlockPos);
+        List<InventoryInfo> connected = getConnectedChests(exportChunkCoordinates);
         for (InventoryInfo i : connected)
             chests.add(i.iItemHandler);
 
@@ -366,10 +366,10 @@ public class FarmSetup implements IFarmSetup {
 
         List<TileEntity> chests = new ArrayList<>();
 
-        if (importBlockPos == null)
+        if (importChunkCoordinates == null)
             return chests;
 
-        List<InventoryInfo> connected = getConnectedChests(importBlockPos);
+        List<InventoryInfo> connected = getConnectedChests(importChunkCoordinates);
         for (InventoryInfo i : connected)
             chests.add(i.te);
 
@@ -382,10 +382,10 @@ public class FarmSetup implements IFarmSetup {
 
         List<TileEntity> chests = new ArrayList<>();
 
-        if (exportBlockPos == null)
+        if (exportChunkCoordinates == null)
             return chests;
 
-        List<InventoryInfo> connected = getConnectedChests(exportBlockPos);
+        List<InventoryInfo> connected = getConnectedChests(exportChunkCoordinates);
         for (InventoryInfo i : connected)
             chests.add(i.te);
 

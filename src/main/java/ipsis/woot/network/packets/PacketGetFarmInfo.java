@@ -5,7 +5,7 @@ import ipsis.woot.network.PacketHandler;
 import ipsis.woot.tileentity.TileEntityMobFactoryHeart;
 import ipsis.woot.tileentity.ui.FarmUIInfo;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
@@ -15,17 +15,17 @@ public class PacketGetFarmInfo implements IMessage {
 
     public PacketGetFarmInfo() { }
 
-    BlockPos pos;
+    ChunkCoordinates pos;
 
-    public PacketGetFarmInfo(BlockPos pos) {
+    public PacketGetFarmInfo(ChunkCoordinates pos) {
 
-        this.pos = new BlockPos(pos);
+        this.pos = new ChunkCoordinates(pos);
     }
 
     @Override
     public void fromBytes(ByteBuf buf) {
 
-        pos = new BlockPos(buf.readInt(), buf.readInt(), buf.readInt());
+        pos = new ChunkCoordinates(buf.readInt(), buf.readInt(), buf.readInt());
     }
 
     @Override

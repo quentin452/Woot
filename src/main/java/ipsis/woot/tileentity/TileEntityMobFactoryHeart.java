@@ -19,17 +19,14 @@ import ipsis.woot.power.calculation.IPowerCalculator;
 import ipsis.woot.tileentity.ui.FarmUIInfo;
 import ipsis.woot.util.*;
 import net.minecraft.block.Block;
+import net.minecraft.client.renderer.texture.ITickable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.ITickable;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
@@ -146,22 +143,22 @@ public class TileEntityMobFactoryHeart extends TileEntity implements ITickable, 
     @Override
     public void update() {
 
-        if (world.isRemote)
+        if (worldObj.isRemote)
             return;
 
         // Cannot set this on create as the world may not be set
         if (farmStructure == null) {
-            farmStructure = new FarmBuilder().setWorld(getWorld()).setPosition(getPos());
+            farmStructure = new FarmBuilder().setWorld(getWorldObj()).setPosition(getPos());
             farmStructure.setStructureDirty();
         }
 
-        tickTracker.tick(world);
+        tickTracker.tick(worldObj);
         farmStructure.tick(tickTracker);
 
         if (farmStructure.isFormed()) {
             if (farmStructure.hasChanged()) {
                 farmSetup = farmStructure.createSetup();
-                powerRecipe = powerCalculator.calculate(world, farmSetup);
+                powerRecipe = powerCalculator.calculate(worldObj, farmSetup);
                 spawnRecipe = Woot.spawnRecipeRepository.get(farmSetup.getWootMobName());
                 recipeProgressTracker.setPowerStation(farmSetup.getPowerStation());
                 recipeProgressTracker.setPowerRecipe(powerRecipe);
@@ -294,7 +291,7 @@ public class TileEntityMobFactoryHeart extends TileEntity implements ITickable, 
         } else {
             if (!scannedFarm.controller.isPresent()) {
                 // Controller missing
-                BlockPos pos = farmScanner.getControllerPos(world, getPos(), facing);
+                ChunkCoordinates pos = farmScanner.getControllerPos(world, getPos(), facing);
                 player.sendStatusMessage(new TextComponentString(StringHelper.localizeFormat("chat.woot.validate.nocontroller",
                         pos.getX(), pos.getY(), pos.getZ())), false);
             } else {

@@ -9,7 +9,7 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -163,7 +163,7 @@ public class TileEntityLayout extends TileEntity {
          * This defaults to the bounding box size which will be a single blocks.
          * For this block we need it to be a bit larger to accommodate the largest tier factory
          */
-        BlockPos pos = getPos();
+        ChunkCoordinates pos = getPos();
         return new AxisAlignedBB(
                 pos.add(-Woot.factoryPatternRepository.getMaxXZOffset(), -1, -Woot.factoryPatternRepository.getMaxXZOffset()),
                 pos.add(Woot.factoryPatternRepository.getMaxXZOffset(), Woot.factoryPatternRepository.getMaxYOffset() - 1, Woot.factoryPatternRepository.getMaxXZOffset()));

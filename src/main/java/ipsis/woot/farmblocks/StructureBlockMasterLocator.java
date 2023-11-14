@@ -5,7 +5,7 @@ import ipsis.woot.block.BlockMobFactoryStructure;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -20,21 +20,21 @@ import java.util.Stack;
 
 public class StructureBlockMasterLocator {
 
-    public IFarmBlockMaster findMaster(World world, BlockPos origin) {
+    public IFarmBlockMaster findMaster(World world, ChunkCoordinates origin) {
 
         IFarmBlockMaster tmpMaster = null;
         boolean masterFound = false;
 
-        List<BlockPos> connected = new ArrayList<>();
-        Stack<BlockPos> traversing = new Stack<>();
+        List<ChunkCoordinates> connected = new ArrayList<>();
+        Stack<ChunkCoordinates> traversing = new Stack<>();
 
         traversing.add(origin);
         while (!masterFound && !traversing.isEmpty()) {
-            BlockPos curr = traversing.pop();
+            ChunkCoordinates curr = traversing.pop();
 
             connected.add(curr);
             for (EnumFacing facing : EnumFacing.values()) {
-                BlockPos pos = curr.offset(facing);
+                ChunkCoordinates pos = curr.offset(facing);
 
                 if (world.isBlockLoaded(pos)) {
                     Block b = world.getBlockState(pos).getBlock();

@@ -1,10 +1,10 @@
 package ipsis.woot.block;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import ipsis.woot.init.ModBlocks;
 import ipsis.woot.oss.client.ModelHelper;
 import net.minecraft.block.material.Material;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockStygianIronOre extends BlockWoot {
 
@@ -12,7 +12,7 @@ public class BlockStygianIronOre extends BlockWoot {
 
     public BlockStygianIronOre() {
 
-        super(Material.ROCK, BASENAME);
+        super(Material.rock, BASENAME);
     }
 
     @SideOnly(Side.CLIENT)

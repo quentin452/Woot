@@ -7,10 +7,9 @@ import ipsis.woot.util.EnumFarmUpgrade;
 import ipsis.woot.util.WootMob;
 import ipsis.woot.util.WootMobName;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.fluids.IFluidHandler;
 
 import javax.annotation.Nonnull;
 import java.util.List;
@@ -33,9 +32,9 @@ public interface IFarmSetup {
     int getStoredXp();
 
 
-    void setPowerCellBlockPos(BlockPos blockPos);
-    void setExportBlockPos(BlockPos blockPos);
-    void setImportBlockPos(BlockPos blockPos);
+    void setPowerCellChunkCoordinates(ChunkCoordinates ChunkCoordinates);
+    void setExportChunkCoordinates(ChunkCoordinates ChunkCoordinates);
+    void setImportChunkCoordinates(ChunkCoordinates ChunkCoordinates);
     void setFacing(EnumFacing facing);
     EnumFacing getFacing();
 

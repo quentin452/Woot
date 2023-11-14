@@ -10,7 +10,6 @@ import ipsis.woot.tileentity.TileEntityMobFactoryHeart;
 import ipsis.woot.tileentity.ui.FarmUIInfo;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.awt.*;
@@ -62,29 +61,29 @@ public class FactoryHeartContainerGui extends GuiContainerWoot {
         int dropsHeight = HEIGHT - (GUI_Y_MARGIN * 2) - recipeHeight - progressHeight0 - progressHeight1 - ingredientHeight - (4 * panelMargin);
 
         recipeElement = new ElementTextBox(
-                this, fontRenderer,
+                this, fontRendererObj,
                 "Configuration",
                 GUI_X_MARGIN, GUI_Y_MARGIN,
                 panelWidth, recipeHeight);
 
         progressElementPower = new ElementProgress(
-                this, fontRenderer,
+                this, fontRendererObj,
                 null,
                 "Power", 1, Color.red.getRGB(),
                 GUI_X_MARGIN, GUI_Y_MARGIN + recipeHeight + panelMargin,
                 panelWidth, progressHeight0);
         progressElementRecipe = new ElementProgress(
-                this, fontRenderer,
+                this, fontRendererObj,
                 null,
                 "Spawning", 0, Color.orange.getRGB(),
                 GUI_X_MARGIN, GUI_Y_MARGIN + recipeHeight + progressHeight0 + (panelMargin * 2),
                 panelWidth, progressHeight0);
         ingredientElement = new ElementStackBox(
-                this, fontRenderer,
+                this, fontRendererObj,
                 "Ingredients",
                 GUI_X_MARGIN, GUI_Y_MARGIN + recipeHeight + progressHeight0 + progressHeight1 + (panelMargin * 3),
                 panelWidth, ingredientHeight);
-        dropsElement = new ElementStackBox(this, fontRenderer,
+        dropsElement = new ElementStackBox(this, fontRendererObj,
                 "Drops",
                 GUI_X_MARGIN, GUI_Y_MARGIN + recipeHeight + progressHeight0 + progressHeight1 + ingredientHeight + (panelMargin * 4),
                 panelWidth, dropsHeight);

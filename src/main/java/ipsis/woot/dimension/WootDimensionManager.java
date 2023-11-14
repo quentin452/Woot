@@ -7,7 +7,7 @@ import ipsis.woot.dimension.world.WootWorldProvider;
 import ipsis.woot.handler.ConfigHandler;
 import ipsis.woot.oss.LogHelper;
 import ipsis.woot.util.DebugSetup;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -57,7 +57,7 @@ public class WootDimensionManager implements ITextStatus {
 
     private boolean isChunkLoaded(WorldServer worldServer) {
 
-        return worldServer != null && worldServer.isBlockLoaded(new BlockPos(CHUNK_X * 16, 0, CHUNK_Z * 16));
+        return worldServer != null && worldServer.isBlockLoaded(new ChunkCoordinates(CHUNK_X * 16, 0, CHUNK_Z * 16));
     }
 
     public void touchSpawnChunk(World world) {

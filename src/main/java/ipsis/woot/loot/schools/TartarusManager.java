@@ -10,7 +10,7 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EntitySelectors;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
@@ -37,11 +37,11 @@ public class TartarusManager implements ITextStatus {
 
                     if (y == 0 || y == 7) {
                         // top and bottom
-                        BlockPos pos = new BlockPos(spawnBox.getBasePos().getX() + x, spawnBox.getBasePos().getY() + y, spawnBox.getBasePos().getZ() + z);
+                        ChunkCoordinates pos = new ChunkCoordinates(spawnBox.getBasePos().getX() + x, spawnBox.getBasePos().getY() + y, spawnBox.getBasePos().getZ() + z);
                         world.setBlockState(pos, b.getDefaultState());
                     } else if (x == 0 || x == 7 || z == 0 || z == 7) {
                         // sides
-                        BlockPos pos = new BlockPos(spawnBox.getBasePos().getX() + x, spawnBox.getBasePos().getY() + y, spawnBox.getBasePos().getZ() + z);
+                        ChunkCoordinates pos = new ChunkCoordinates(spawnBox.getBasePos().getX() + x, spawnBox.getBasePos().getY() + y, spawnBox.getBasePos().getZ() + z);
                         world.setBlockState(pos, b.getDefaultState());
                     }
                 }
@@ -59,7 +59,7 @@ public class TartarusManager implements ITextStatus {
      */
     private void init() {
 
-        BlockPos origin = new BlockPos(CHUNK_X * 16, 0, CHUNK_Z * 16);
+        ChunkCoordinates origin = new ChunkCoordinates(CHUNK_X * 16, 0, CHUNK_Z * 16);
 
 
         int[] xOffsets = { 0, 8, 0, 8 };
@@ -69,8 +69,8 @@ public class TartarusManager implements ITextStatus {
         for (int y = 0; y < 256; y += 8) {
 
             for (int i = 0; i < 4; i++) {
-                BlockPos basePos = new BlockPos(origin.getX() + xOffsets[i], y, origin.getZ() + zOffsets[i]);
-                BlockPos spawnPos = new BlockPos(basePos.getX() + 4, basePos.getY() + 4, basePos.getZ() + 4);
+                ChunkCoordinates basePos = new ChunkCoordinates(origin.getX() + xOffsets[i], y, origin.getZ() + zOffsets[i]);
+                ChunkCoordinates spawnPos = new ChunkCoordinates(basePos.getX() + 4, basePos.getY() + 4, basePos.getZ() + 4);
                 spawnBoxMap.put(spawnId++, new SpawnBox(basePos, spawnPos));
             }
         }

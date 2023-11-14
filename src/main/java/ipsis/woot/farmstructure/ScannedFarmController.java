@@ -4,12 +4,13 @@ import ipsis.Woot;
 import ipsis.woot.multiblock.EnumMobFactoryTier;
 import ipsis.woot.util.WootMob;
 import net.minecraft.entity.EntityList;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.World;
 
 public class ScannedFarmController {
 
-    private BlockPos pos;
+    private ChunkCoordinates pos;
     WootMob wootMob;
 
     public static boolean isEqual(ScannedFarmController a, ScannedFarmController b) {
@@ -65,12 +66,12 @@ public class ScannedFarmController {
         return EnumMobFactoryTier.isLessThanOrEqual(mobTier, tier);
     }
 
-    public BlockPos getBlocks() {
+    public ChunkCoordinates getBlocks() {
 
         return pos;
     }
 
-    public void setBlocks(BlockPos pos) {
+    public void setBlocks(ChunkCoordinates pos) {
 
         this.pos = pos;
     }

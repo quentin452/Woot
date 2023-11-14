@@ -1,21 +1,15 @@
 package ipsis.woot.block;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import ipsis.woot.init.ModBlocks;
 import ipsis.woot.oss.client.ModelHelper;
 import ipsis.woot.tileentity.TileEntityMobFactoryExporter;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
-import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockStateContainer;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
@@ -23,12 +17,10 @@ public class BlockMobFactoryExporter extends BlockWoot implements ITileEntityPro
 
     public static final String BASENAME = "exporter";
 
-    public static final PropertyBool FORMED = PropertyBool.create("formed");
-
     public BlockMobFactoryExporter() {
 
-        super (Material.ROCK, BASENAME);
-        this.setDefaultState(this.blockState.getBaseState().withProperty(FORMED, false));
+        super (Material.rock, BASENAME);
+       // this.setDefaultState(this.blockState.getBaseState().withProperty(FORMED, false));
     }
 
     @Nullable
@@ -40,51 +32,24 @@ public class BlockMobFactoryExporter extends BlockWoot implements ITileEntityPro
 
 
     @Override
-    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
+    public void onBlockAdded(World worldIn, int x, int y, int z) {
 
-        TileEntity te = worldIn.getTileEntity(pos);
+        TileEntity te = worldIn.getTileEntity(x,y,z);
         if (te instanceof TileEntityMobFactoryExporter)
             ((TileEntityMobFactoryExporter) te).onBlockAdded();
     }
 
     @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, new IProperty[] { FORMED });
-    }
-
-    @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
-
-        if (worldIn.getTileEntity(pos) instanceof TileEntityMobFactoryExporter) {
-            TileEntityMobFactoryExporter te = (TileEntityMobFactoryExporter) worldIn.getTileEntity(pos);
-            boolean formed = false;
-            if (te != null)
-                formed = te.isClientFormed();
-            return state.withProperty(FORMED, formed);
-        }
-
-        return state;
-    }
-
-    @Override
-    public boolean isOpaqueCube(IBlockState state) {
+    public boolean isOpaqueCube() {
         return false;
     }
 
     @Override
-    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+    public boolean shouldSideBeRendered(IBlockAccess worldIn, int x, int y, int z, int side) {
         return true;
     }
 
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return this.getDefaultState().withProperty(FORMED, meta == 1);
-    }
 
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        return state.getValue(FORMED) ? 1 : 0;
-    }
 
     @SideOnly(Side.CLIENT)
     @Override

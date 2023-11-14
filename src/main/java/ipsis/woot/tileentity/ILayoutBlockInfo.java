@@ -1,9 +1,9 @@
 package ipsis.woot.tileentity;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 
 public interface ILayoutBlockInfo {
 
-    BlockPos getPos();
+    ChunkCoordinates getPos();
     void offsetY(int offset);
 }

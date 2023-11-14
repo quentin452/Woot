@@ -1,7 +1,7 @@
 package ipsis.woot.client.gui.element;
 
 import ipsis.woot.client.gui.GuiContainerWoot;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.MathHelper;
 
 import java.awt.*;
 
@@ -18,8 +18,8 @@ public class WidgetBar {
 
     public static void draw(GuiContainerWoot gui, int x, int y, int width, int percentage, int color) {
 
-        int length = (int)(((float)width / 100.0F) * percentage);
-        length = MathHelper.clamp(length, 0, width);
+        int length = (int)((width / 100.0F) * percentage);
+        length = MathHelper.clamp_int(length, 0, width);
 
         gui.drawSizedModalRect(
                 x + BAR_X_MARGIN,

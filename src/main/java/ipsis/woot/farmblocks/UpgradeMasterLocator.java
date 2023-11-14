@@ -4,7 +4,7 @@ import ipsis.Woot;
 import ipsis.woot.util.DebugSetup;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
@@ -17,7 +17,7 @@ public class UpgradeMasterLocator implements IFarmBlockMasterLocator {
 
     @Nullable
     @Override
-    public IFarmBlockMaster findMaster(World world, BlockPos origin, IFactoryGlueProvider iFactoryGlueProvider) {
+    public IFarmBlockMaster findMaster(World world, ChunkCoordinates origin, IFactoryGlueProvider iFactoryGlueProvider) {
 
         Woot.debugSetup.trace(DebugSetup.EnumDebugType.FARM_SCAN, "findMaster(Upgrade)", origin);
 

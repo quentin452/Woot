@@ -12,7 +12,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.util.FakePlayer;
@@ -53,7 +53,7 @@ public class EntitySpawner implements IEntitySpawner {
         return entity;
     }
 
-    private @Nullable Entity spawnEntity(WootMobName wootMobName, World world, BlockPos pos) {
+    private @Nullable Entity spawnEntity(WootMobName wootMobName, World world, ChunkCoordinates pos) {
 
         Entity entity = createEntity(wootMobName, world);
         if (entity != null) {
@@ -71,7 +71,7 @@ public class EntitySpawner implements IEntitySpawner {
         return entity;
     }
 
-    public void spawn(WootMobName wootMobName, EnumEnchantKey key, World world, BlockPos pos) {
+    public void spawn(WootMobName wootMobName, EnumEnchantKey key, World world, ChunkCoordinates pos) {
 
         Entity entity = spawnEntity(wootMobName, world, pos);
         if (entity == null)

@@ -4,7 +4,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.oredict.OreDictionary;
@@ -16,7 +16,7 @@ public class ItemStackHelper {
     private static Random RANDOM = new Random();
 
     /* Straight from InventoryHelper in vanilla code */
-    public static void spawnInWorld(World world, BlockPos pos, ItemStack itemStack) {
+    public static void spawnInWorld(World world, ChunkCoordinates pos, ItemStack itemStack) {
 
         float f = RANDOM.nextFloat() * 0.8F + 0.1F;
         float f1 = RANDOM.nextFloat() * 0.8F + 0.1F;

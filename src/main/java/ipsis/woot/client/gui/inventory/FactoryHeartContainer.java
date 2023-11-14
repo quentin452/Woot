@@ -1,5 +1,7 @@
 package ipsis.woot.client.gui.inventory;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import ipsis.woot.network.PacketHandler;
 import ipsis.woot.network.packets.PacketFixedProgressBar;
 import ipsis.woot.tileentity.TileEntityMobFactoryHeart;
@@ -7,11 +9,8 @@ import ipsis.woot.tileentity.ui.FarmUIInfo;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class FactoryHeartContainer extends Container {
 

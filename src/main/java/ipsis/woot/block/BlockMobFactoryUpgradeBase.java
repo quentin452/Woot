@@ -1,24 +1,21 @@
 package ipsis.woot.block;
 
-import ipsis.woot.util.EnumSpawnerUpgrade;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import ipsis.woot.tileentity.TileEntityMobFactoryUpgrade;
+import ipsis.woot.util.EnumSpawnerUpgrade;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
 public abstract class BlockMobFactoryUpgradeBase extends BlockWoot implements ITileEntityProvider{
 
     public BlockMobFactoryUpgradeBase(String basename) {
-        super(Material.ROCK, basename);
+        super(Material.rock, basename);
     }
 
     @Override
@@ -28,9 +25,9 @@ public abstract class BlockMobFactoryUpgradeBase extends BlockWoot implements IT
     }
 
     @Override
-    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
+    public void onBlockAdded(World worldIn, int x, int y, int z) {
 
-        TileEntity te = worldIn.getTileEntity(pos);
+        TileEntity te = worldIn.getTileEntity(x,y,z);
         if (te instanceof TileEntityMobFactoryUpgrade)
             ((TileEntityMobFactoryUpgrade) te).onBlockAdded();
     }
@@ -40,24 +37,24 @@ public abstract class BlockMobFactoryUpgradeBase extends BlockWoot implements IT
     }
 
     @Override
-    public boolean isOpaqueCube(IBlockState state) {
+    public boolean isOpaqueCube() {
 
         return false;
     }
 
     @SideOnly(Side.CLIENT)
     @Override
-    public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
+    public boolean shouldSideBeRendered(IBlockAccess worldIn, int x, int y, int z, int side) {
 
-        TileEntity te = blockAccess.getTileEntity(pos);
+        TileEntity te = worldIn.getTileEntity(x,y,z);
         if (te instanceof TileEntityMobFactoryUpgrade) {
-            boolean validBlock =  !isAir(blockState, blockAccess, pos.offset(side.getOpposite()));
+            boolean validBlock =  !isAir(worldIn, x,y,z.offset(side.getOpposite()));
 
             if (validBlock && !((TileEntityMobFactoryUpgrade) te).isClientFormed())
                 return true;
         }
 
-        return super.shouldSideBeRendered(blockState, blockAccess, pos, side);
+        return super.shouldSideBeRendered(worldIn, x,y,z, side);
     }
 
     /**

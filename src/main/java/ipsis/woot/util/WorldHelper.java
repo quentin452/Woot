@@ -4,12 +4,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkCoordinates;
 import net.minecraft.world.World;
 
 public class WorldHelper {
 
-    public static void updateClient(World world, BlockPos pos) {
+    public static void updateClient(World world, ChunkCoordinates pos) {
 
         if (world != null) {
             IBlockState iblockstate = world.getBlockState(pos);
@@ -17,7 +17,7 @@ public class WorldHelper {
         }
     }
 
-    public static void updateNeighbors(World world, BlockPos pos, Block b) {
+    public static void updateNeighbors(World world, ChunkCoordinates pos, Block b) {
 
         if (world != null) {
             IBlockState iBlockState = world.getBlockState(pos);
@@ -25,7 +25,7 @@ public class WorldHelper {
         }
     }
 
-    public static void spawnInWorld(World world, BlockPos pos, ItemStack itemStack) {
+    public static void spawnInWorld(World world, ChunkCoordinates pos, ItemStack itemStack) {
 
         if (itemStack.isEmpty())
             return;
